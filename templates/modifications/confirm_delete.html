@@ -1,0 +1,31 @@
+{% extends 'bases.html' %}
+
+{% block content %}
+<div class="container py-5">
+    <div class="row">
+        <div class="col-md-2 bg-secondary">
+        </div>
+        <div class="col-md-8">
+            <div class="card">
+                <div class="card-body text-center">
+                    <h5 class="card-title text-danger">Confirmer la suppression</h5>
+                    <p class="card-text">
+                        Êtes-vous sûr de vouloir supprimer cet emploi du temps ?<br>
+                        <strong>Professeur :</strong> {{ emploi.professeur.nom }}<br>
+                        <strong>Fonction :</strong> {{ emploi.professeur.fonction }}<br>
+                        <strong>Jour :</strong> {{ emploi.jour }}<br>
+                        <strong>Horaire :</strong> de {{ emploi.heure_debut|time:'H:i' }} à {{ emploi.heure_fin|time:'H:i' }}
+                    </p>
+                    <form method="POST" action="">
+                        {% csrf_token %}
+                        <button type="submit" class="btn btn-danger">Confirmer</button>
+                        <a href="{% url 'gestion_emploi' %}" class="btn btn-secondary">Annuler</a>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-2 bg-secondary">
+        </div>
+    </div>
+</div>
+{% endblock %}

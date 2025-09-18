@@ -1,0 +1,133 @@
+<div class="container-fluid">
+    <!-- En-tête -->
+    <div class="row py-2">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded">
+                <h5 class="text-white mx-2">Liste des élèves</h5>
+                <!-- Lien pour ouvrir le modal -->
+                <a href="#" data-bs-toggle="modal" data-bs-target="#addEleveModal">
+                    <i class="bi bi-plus-circle-fill bg-white text-dark rounded-circle" style="font-size: 1.5rem;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addEleveModal" tabindex="-1" aria-labelledby="addEleveModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addEleveModalLabel">Ajouter un élève</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulaire -->
+                    <form method="POST" action="{% url 'add_eleves' %}">
+                        {% csrf_token %}
+                        <fieldset class="border p-3 rounded">
+                            <legend class="text-center p-2 fw-bold" style="font-size: 1.5rem;">S'inscrire</legend>
+
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="prenom" placeholder="Entrer votre prénoms" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="nom" placeholder="Entrer votre nom" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="date" class="form-control" name="date_naissance" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="lieu_naissance" placeholder="Entrer votre lieu de naissance" required>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-control" name="sexe" required>
+                                    <option value="" disabled selected>Choisir le genre</option>
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="adresse" placeholder="Entrer votre adresse" required>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-control" name="niveau" required>
+                                    <option value="">-- Sélectionnez une classe --</option>
+                                    <option value="6">6</option>
+                                    <option value="5">5</option>
+                                    <option value="4">4</option>
+                                    <option value="3">3</option>
+                                </select>
+                            </div>
+                             <div class="mb-3">
+                                <select class="form-control" name="classe" required>
+                                    <option value="">-- Sélectionnez une classe --</option>
+                                    <option value="A">A</option>
+                                    <option value="B">B</option>
+                                    <option value="C">C</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100 mb-3">S'inscrire</button>
+                        </fieldset>
+                    </form>  
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des élèves -->
+    {% for eleves in eleves_page_obj %}
+        <div class="row text-black text-center align-items-center py-1 rounded">
+            <!-- Avatar -->
+            <div class="col-2 col-md-1 text-center">
+                <div class="rounded-circle border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                    <i class="bi bi-people-fill bg-white text-dark" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+            <!-- Détails Élève -->
+            <div class="col-6 col-md-5">
+                <p class="mb-0">{{ eleves.prenom }} - {{ eleves.nom }}</p>
+            </div>
+            <div class="col-4 col-md-4">
+                <p class="mb-0">{{ eleves.niveau }}</p>
+            </div>
+            <!-- Bouton Détails -->
+            <div class="col-12 col-md-2 text-end">
+                <a href="{% url 'update_eleve' eleves.id %}" class="">
+                    <p class="mb-0"> <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i></p>
+                </a>
+            </div>
+            <!-- Ligne de séparation -->
+            <div class="col-md-1 col-6"></div>
+            <div class="col-md-11 col-6">
+                <hr class="border border-dark border-1 mt-2">
+            </div>
+        </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if afficher_pagination_eleve %}
+        <div class="row mt-3">
+            <div class="col-12 text-center">
+                <nav>
+                    <ul class="pagination justify-content-center">
+                        {% if eleves_page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page_eleves={{ eleves_page_obj.previous_page_number }}">&laquo;</a>
+                        </li>
+                        {% endif %}
+                        {% for num in eleves_page_obj.paginator.page_range %}
+                        <li class="page-item {% if eleves_page_obj.number == num %}active{% endif %}">
+                            <a class="page-link" href="?page_eleves={{ num }}">{{ num }}</a>
+                        </li>
+                        {% endfor %}
+                        {% if eleves_page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page_eleves={{ eleves_page_obj.next_page_number }}">&raquo;</a>
+                        </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            </div>
+        </div>
+    {% endif %}
+</div>

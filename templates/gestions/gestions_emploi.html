@@ -1,0 +1,20 @@
+{% extends "bases.html" %}
+
+
+{% block entete %}
+        {% include "partials/cards_classe.html" %}
+{% endblock %}
+
+{% block dashboard02 %}
+    {% include "partials/navigation_emploi.html" %}
+{% endblock  %}
+
+{% block content_heure %}
+        {% include "partials/para_heure.html" %}
+{% endblock %}
+
+{% block content %}
+        <div class="container-fluid">
+            {% include "partials/emploi_temps.html" %}
+        </div>
+{% endblock %}

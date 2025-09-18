@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <title>Nouveau emploi</title>
+    {% load static %}
+</head>
+<body bg-light>
+   <div class="container-fluid mt-5 py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <h1 class="text-center mb-4">Modification Absence</h1>
+                <form method="POST" action="{% url 'update_absence' absence.id %}">
+                    {% csrf_token %}
+                    <fieldset class="border p-4 rounded bg-white shadow">
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Prénoms Nom :
+                                </span>
+                                <select class="form-control border-0 fs-6" name="eleve" required>
+                                    {% for eleve in eleves %}
+                                        <option value="{{ eleve.id }}" {% if eleve.id == absence.eleve.id %}selected{% endif %}>
+                                            {{ eleve.prenom }} - {{ eleve.nom }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <!-- Icône de modification -->
+                                    <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    jour et Heure :
+                                </span>
+                                <select class="form-control border-0 fs-6" name="emploitemps" required>
+                                    {% for emploi in emplois %}
+                                        <option value="{{ emploi.id }}" {% if emploi.id == absence.emploitemps.id %}selected{% endif %}>
+                                            {{ emploi.jour }} - {{ emploi.heure_debut|time:'H:i' }} à {{ emploi.heure_fin|time:'H:i' }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <!-- Icône de modification -->
+                                    <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Matière :
+                                </span>
+                                <select class="form-control border-0 fs-6" name="professeur" required>
+                                    {% for professeur in professeurs %}
+                                        <option value="{{ professeur.id }}" {% if professeur.id == absence.professeur.id %}selected{% endif %}>
+                                            {{ professeur.fonction }}
+                                        </option>
+                                    {% endfor %}
+                                </select>
+                                <!-- Icône de modification -->
+                                    <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                    
+                        <div class="mb-3">
+                            <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    justification :
+                                </span>
+                                <select class="form-control border-0 fs-6" name="justification" required>
+                                    <option value="Non justifiée" {% if absence.justification == "Non justifiée" %}selected{% endif %}>
+                                        Non justifiée
+                                    </option>
+                                    <option value="justifiée" {% if absence.justification == "justifiée" %}selected{% endif %}>
+                                        Justifiée
+                                    </option>
+                                </select>
+                                <!-- Icône de modification -->
+                                    <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Mettre à jour</button>
+                    </fieldset>
+                </form> 
+            </div>   
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

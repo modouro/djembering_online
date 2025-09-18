@@ -1,0 +1,119 @@
+<div class="container-fluid ">
+    <!-- En-tête -->
+    <div class="row py-2">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded">
+                <h5 class="text-white mx-2">Liste des professeurs</h5>
+                <a href="#" data-bs-toggle="modal" data-bs-target="#addProfesseurModal">
+                    <i class="bi bi-plus-circle-fill bg-white text-dark rounded" style="font-size: 1.5rem;"></i>
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modale -->
+    <div class="modal fade" id="addProfesseurModal" tabindex="-1" aria-labelledby="addProfesseurModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addProfesseurModalLabel">Ajouter un Professeur</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulaire -->
+                    <form method="POST" action="{% url 'add_professeur' %}">
+                        {% csrf_token %}
+                        <fieldset class="border p-3 rounded">
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="prenom" placeholder="Entrer votre prénoms" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="nom" placeholder="Entrer votre nom" required>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-control" name="sexe" required>
+                                    <option value="" disabled selected>Choisir le genre</option>
+                                    <option value="M">Masculin</option>
+                                    <option value="F">Féminin</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-control" name="fonction" required>
+                                    <option value="" disabled selected>Choisissez une matière</option>
+                                    <option value="Mathématiques">Mathématiques</option>
+                                    <option value="Physique-Chimie">Physique-Chimie</option>
+                                    <option value="Sciences de la Vie et de la Terre (SVT)">SVT</option>
+                                    <option value="Technologie">Technologie</option>
+                                    <option value="Histoire-Géographie">Histoire-Géographie</option>
+                                    <option value="Langue Française">Langue Française</option>
+                                    <option value="Langue Anglaise">Langue Anglaise</option>
+                                    <option value="Éducation Physique et Sportive (EPS)">EPS</option>
+                                </select>
+                            </div>
+                            <div class="mb-3">
+                                <input type="text" class="form-control" name="telephone" placeholder="Entrer votre téléphone" required>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des Professeurs -->
+    {% for professeur in professeur_page_obj %}
+    <div class="row text-black text-center align-items-center py-1 rounded">
+        <!-- Avatar -->
+        <div class="col-2 col-md-1 text-center">
+            <div class="rounded-circle border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
+            </div>
+        </div>
+        <!-- Détails Professeur --> 
+        <div class="col-6 col-md-5">
+            <p class="mb-0 text-start">{{ professeur.prenom }} - {{ professeur.nom }}</p>
+        </div>
+        <div class="col-4 col-md-4">
+            <p class="mb-0 text-start">{{ professeur.fonction }}</p>
+        </div>
+        <div class="col-12 col-md-2 text-end">
+            <a href="{% url 'update_professeur' professeur.id %}" class="">
+                <p class="mb-0"> <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i></p>
+            </a>
+        </div>
+        <!-- Ligne de séparation -->
+        <div class="col-md-1 col-6"></div>
+        <div class="col-md-11 col-6">
+            <hr class="border border-dark border-1 mt-2">
+        </div>
+    </div>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if afficher_pagination_professeur %}
+    <div class="row mt-3">
+        <div class="col-12 text-center">
+            <nav>
+                <ul class="pagination justify-content-center">
+                    {% if professeur_page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page_professeur={{ professeur_page_obj.previous_page_number }}">&laquo;</a>
+                    </li>
+                    {% endif %}
+                    {% for num in professeur_page_obj.paginator.page_range %}
+                    <li class="page-item {% if professeur_page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page_professeur={{ num }}">{{ num }}</a>
+                    </li>
+                    {% endfor %}
+                    {% if professeur_page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page_professeur={{ professeur_page_obj.next_page_number }}">&raquo;</a>
+                    </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        </div>
+    </div>
+    {% endif %}
+</div>

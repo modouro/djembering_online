@@ -1,0 +1,83 @@
+<div class="container py-2">
+
+    <div class="d-flex justify-content-between align-items-center">
+        <h4>Mes autorisations d'absences</h4>
+        <!-- Lien pour ouvrir le modal -->
+        <a href="#" data-bs-toggle="modal" data-bs-target="#addAutorisationModal">
+            <i class="bi bi-plus-circle-fill bg-white text-primary rounded" style="font-size: 1.5rem;"></i>
+        </a>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="addAutorisationModal" tabindex="-1" aria-labelledby="addAutorisationModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAutorisationModalLabel">Ajouter une autorisation</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+
+                <div class="modal-body">
+                    <!-- Formulaire -->
+                    <form method="POST" action="{% url 'add_autorisation' %}">
+                        {% csrf_token %}
+                        <fieldset class="border p-3 rounded">
+                            <div class="mb-3">
+                                <textarea class="form-control" name="motif" rows="3" required></textarea>
+                            </div>
+                            <div class="mb-3">
+                                <input type="date" class="form-control" name="date_debut" required>
+                            </div>
+                            <div class="mb-3">
+                                <input type="date" class="form-control" name="date_fin" required>
+                            </div>
+                            <div class="mb-3">
+                                <select class="form-control" name="professeur" required>
+                                    <option value="" disabled selected>Selectionnez une professeur</option>
+                                    {% for professeur in professeurs %}
+                                    <option value="{{ professeur.id }}">{{ professeur.nom }} {{ professeur.prenom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">Enregistrer</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% for conge in conges %}
+        <!-- Données supplémentaires -->
+        <div class="row bg-light text-black text-center py-0 rounded">
+            <div class="col-md-1"></div>
+            <div class="col-md-11">
+                <hr class="border border-dark border-1 justify-content-end">
+            </div>
+            <div class="col-md-1 col-6">
+                <div class="d-flex align-items-center justify-content-center rounded-circle border" 
+                    style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+            <div class="col-md-4 col-6">
+                <p class="mb-0">{{ conge.professeur.nom }} {{ conge.professeur.fonction }}</p>
+            </div>
+            <div class="col-md-4 col-6">
+                <p class="mb-0">{{ conge.date_fin }}</p>
+            </div>
+            <div class="col-md-3 col-6 d-flex justify-content-end">
+                <a class="btn btn-primary" href="{% url "update_autorisation" conge.id %}">
+                    <i class="bi bi-eye"></i> détail
+                </a>
+            </div>
+
+            <!-- C'est pour créer la ligne horizontal -->
+            <div class="col-md-1"></div>
+            <div class="col-md-11">
+                <hr class="border border-dark border-1 justify-content-end">
+            </div>
+        </div>
+    {% endfor %}
+</div>
+
+

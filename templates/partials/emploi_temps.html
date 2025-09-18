@@ -1,0 +1,59 @@
+<div class="d-flex flex-wrap justify-content-center gap-2 my-3">
+    <!-- Navigation des pages -->
+
+    <ul class="nav nav-tabs">
+        {% for i in sectors %}
+        <li class="nav-item">
+             <a href="{% url 'gestion_emploi' sector=i day=selected_day %}" 
+               class="nav-link {% if sector == i %}bg-white text-primary{% else %}bg-success text-white{% endif %}">
+                Classe {{ i }} °
+            </a> 
+        </li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'add_emploi' %}">
+        <i class="bi bi-plus-circle-fill text-success" style="font-size: 1.5rem;"></i>
+    </a>
+</div>
+ <!-- Boutons pour les jours de la semaine -->
+<div class="d-flex justify-content-center gap-2 my-3">
+    {% for jour in jours %}
+    <a href="{% url 'gestion_emploi' sector=sector day=jour %}" 
+        class="btn btn-outline-primary {% if selected_day == jour %}active{% endif %}">
+        {{ jour }}
+    </a>
+    {% endfor %}
+</div>
+
+<div class="container py-1">
+    <h4 class="text-center text-primary">Classe {{ sector }} – {{ selected_day }}</h4>
+    {% if emplois %}
+        <div class="row">
+            {% for emploi in emplois %}
+                <div class="col-md-4">
+                    <div class="card mb-3">
+                        <div class="card-body">
+                            <h5 class="card-title">Mr/Mme : {{ emploi.professeur.nom }}</h5>
+                            <p class="card-text mb-0">{{ emploi.professeur.fonction }} :: {{ emploi.eleve.niveau }}</p>
+                            <p class="card-text mb-0">Jour : {{ emploi.jour }}</p>
+                            <p class="card-text mb-0">De : {{ emploi.heure_debut|time:'H:i' }} à {{ emploi.heure_fin|time:'H:i' }}</p>
+                            <div class="mt-3 d-flex justify-content-between">
+                                <a href="{% url 'update_emploi' emploi.id %}" class="btn btn-primary btn-sm">Détails</a>
+                                <a href="{% url 'delete_emploi' emploi.id %}" class="btn btn-danger btn-sm">Annuler</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <p class="text-center text-muted">Aucun emploi du temps disponible pour la classe {{ sector }} le {{ selected_day }}.</p>
+    {% endif %}
+</div>
+
+
+
+
+
+
+

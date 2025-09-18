@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Nouveau emploi</title>
+    {% load static %}
+</head>
+<body>
+    <div class="container d-flex justify-content-center align-items-center primary-subtle" style="min-height: 100vh;">
+        <div class="col-md-5">
+               <!-- Image centrée -->
+            <div class="row my-4 justify-content-center">
+                <!-- Conteneur rond bleu pour l'icône -->
+                <div class="bg-info rounded-circle d-flex align-items-center justify-content-center mx-auto" 
+                    style="width: 120px; height: 120px;">
+                    <i class="bi bi-person-fill text-white" style="font-size: 5rem;"></i>
+                </div>
+            </div>
+            <form method="POST" action="{% url 'add_emploi' %}">
+                {% csrf_token %}
+                <div class="mb-3">
+                    <input type="time" name="heure_debut" class="form-control" value="{{ heure_fin_default }}" required>
+                </div>
+                <div class="mb-3">
+                    <input type="time" name="heure_fin" class="form-control" value="{{ heure_debut_default }}" required>
+                </div>
+                <div class="mb-3">
+                    <select name="jour" class="form-control" required>
+                        <option value="" disabled selected>Choisir un jour</option>
+                        <option value="Lundi">Lundi</option>
+                        <option value="Mardi">Mardi</option> 
+                        <option value="Mercredi">Mercredi</option>
+                        <option value="Jeudi">Jeudi</option>
+                        <option value="Vendredi">Vendredi</option>
+                        <option value="Samedi">Samedi</option>
+                        <option value="Dimanche">Dimanche</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <select name="professeur" class="form-control" id="professeur" required>
+                        <option value="" disabled selected>Choisir un enseignant</option>
+                        {% for professeur in professeurs %}
+                        <option value="{{ professeur.id }}">{{ professeur.nom }} - {{ professeur.fonction }}</option>
+                        {% endfor %}
+                    </select>                        
+                </div>
+                <div class="mb-3">
+                    <select name="eleve" class="form-control" id="eleve" required>
+                        <option value="" disabled selected>Choisir un niveau</option>
+                        {% for eleve in eleves %}
+                        <option value="{{ eleve.id }}">{{ eleve.niveau }} </option>
+                        {% endfor %}
+                    </select>                        
+                </div>
+                <div class="mb-3 d-flex align-content-between justify-content-between">
+                    <button type="submit" class="btn btn-primary">Ajouter</button>
+                    <a href="{% url 'gestion_emploi' %}" class="btn btn-secondary">Retour</a>
+                </div>
+            </form>
+            
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,87 @@
+<div class="container mt-5 align-content-center justify-content-center">
+    <form method="POST">
+        {% csrf_token %}
+        <!-- Informations du patient -->
+        <div class="row justify-content-center mt-2">
+            <div class="col-md-6">
+                
+                    <div class="row mb-3 border border-1 rounded">
+                        <div class="col-12 d-flex align-items-center justify-content-between p-4">
+                            <!-- Texte (Docteur et nom) -->
+                            <div>
+                                <span class="text-primary d-block mb-2">Docteur {{ nom }} </span> 
+                                <p class="mb-0"> {{ fonction }} </p>   
+                            </div>
+                            
+                            <!-- Icône à droite -->
+                            <i class="bi bi-person-circle ms-3" style="font-size: 0,5rem;"></i> <!-- Exemple d'icône Bootstrap -->
+                        </div>
+                    </div>
+
+                     <!-- Téléphone -->
+                     <div class="row mb-3 border border-1 rounded ">
+                        <div class="col-12 d-flex align-items-center justify-content-center">
+                            <span class="input-group-text">
+                                Adresse :
+                            </span>
+                            <input type="text" class="form-control" name="adresse" value="{{ adresse }}" required>
+                            <!-- Icône de modification -->
+                            <a href="#" class="ms-auto text-decoration-none">
+                                <i class="bi bi-pencil"> </i> <!-- Icône Bootstrap Pencil -->
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Téléphone -->
+                    <div class="row mb-3 border border-1 rounded ">
+                        <div class="col-12 d-flex align-items-center justify-content-center">
+                            <span class="input-group-text">
+                                Téléphone :
+                            </span>
+                            <input type="text" class="form-control" name="telephone" value="{{ telephone }}" required>
+                            <!-- Icône de modification -->
+                            <a href="#" class="ms-auto text-decoration-none">
+                                <i class="bi bi-pencil"> </i> <!-- Icône Bootstrap Pencil -->
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- email -->
+                    <div class="row mb-3 border border-1 rounded ">
+                        <div class="col-12 d-flex align-items-center justify-content-center">
+                            <span class="input-group-text">
+                                Adresse email :
+                            </span>
+                            <input type="email" class="form-control" name="email" value="{{ email }}" required>                                   
+                            <!-- Icône de modification -->
+                            <a href="#" class="ms-auto text-decoration-none">
+                                <i class="bi bi-pencil"></i> <!-- Icône Bootstrap Pencil -->
+                            </a>
+                        </div>
+                    </div>
+
+                    <!-- Mot de passe -->
+                    <div class="row mb-3 border border-1 ">
+                        <div class="col-12 d-flex align-items-center justify-content-center">
+                            <span class="input-group-text">
+                                Mot de passe :
+                            </span>
+                            <input type="password" class="form-control" name="password" value="" required>
+                            <!-- Icône de modification -->
+                            <a href="#" class="ms-auto text-decoration-none">
+                                <i class="bi bi-pencil"></i> <!-- Icône Bootstrap Pencil -->
+                            </a>
+                        </div>
+                    </div>
+            </div>
+        </div>
+        
+        <!-- Bouton d'action -->
+        <div class="row justify-content-center mt-1">
+            <div class="col-md-6 mt-4">
+                <button class="btn btn-primary w-100">Enregistrer</button>
+            </div>
+        </div>
+    </form>
+</div>
+

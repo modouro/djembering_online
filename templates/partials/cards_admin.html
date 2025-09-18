@@ -1,0 +1,65 @@
+<div class="container-fluid py-2">
+    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
+      <!-- Cercle 1 -->
+      <div class="col d-flex justify-content-center">
+        <a href=" {% url "gestion_emploi" %} " class="text-decoration-none text-uppercase">
+          <div 
+            class="rounded-circle bg-primary d-flex justify-content-center align-items-center text-white"
+            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
+            Emplois {{ total_emplois }}
+          </div>
+        </a>
+      </div>
+      <!-- Cercle 2 -->
+      <div class="col d-flex justify-content-center">
+        <a href=" {% url "gestions_heure" %} " class="text-decoration-none text-uppercase">
+          <div 
+            class="rounded-circle bg-danger d-flex justify-content-center align-items-center text-white"
+            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
+            Heures {{ total_heures }}
+          </div>
+        </a>
+      </div>
+      <!-- Cercle 3 -->
+      <div class="col d-flex justify-content-center">
+        <a href=" " class="text-decoration-none text-uppercase">
+          <div 
+            class="rounded-circle bg-success d-flex justify-content-center align-items-center text-white"
+            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
+            Effectifs {{ total_eleves }}
+          </div>
+        </a>
+      </div>
+      <!-- Cercle 4 -->
+      <div class="col d-flex justify-content-center">
+        <a href=" {% url "gestion_classe" %} " class="text-decoration-none text-uppercase">
+          <div 
+            class="rounded-circle bg-warning d-flex justify-content-center align-items-center text-white"
+            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
+            Enseignants {{ total_professeurs }}
+          </div>
+        </a>
+      </div>
+      <!-- Cercle 5 -->
+      <div class="col d-flex justify-content-center">
+        <a href=" {% url "gestion_emploi" %} " class="text-decoration-none text-uppercase">
+          <div 
+            class="rounded-circle bg-info d-flex justify-content-center align-items-center text-white"
+            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
+            Absents {{ total_absences }}
+          </div>
+        </a>
+      </div>
+      <!-- Cercle 6 -->
+      <div class="col d-flex justify-content-center">
+        <a href=" {% url "add_autorisation" %} " class="text-decoration-none text-uppercase">
+          <div 
+            class="rounded-circle bg-secondary d-flex justify-content-center align-items-center text-white"
+            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
+            Autorisés {{ total_conges }}
+          </div>
+        </a>
+      </div>
+    </div>
+  </div>
+  

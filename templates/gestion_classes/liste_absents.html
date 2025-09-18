@@ -1,0 +1,116 @@
+<div class="container-fluid py-1 justify-content-center align-items-center">
+    <!-- Titre et bouton d'ajout -->
+    <div class="d-flex justify-content-between align-items-center bg-danger p-0 rounded">
+        <h5 class="text-white mx-2">Tous les absences de la journée</h5>
+        <a href="#" data-bs-toggle="modal" data-bs-target="#addAbsentModal">
+            <i class="bi bi-plus-circle-fill bg-white text-dark rounded" style="font-size: 1.5rem;"></i>
+        </a>
+    </div>
+
+    <!-- Modal pour ajout d'absence -->
+    <div class="modal fade" id="addAbsentModal" tabindex="-1" aria-labelledby="addAbsentModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="addAbsentModalLabel">Ajouter un Absence</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <!-- Formulaire -->
+                    <form method="POST" action="{% url 'add_absences' %}">
+                        {% csrf_token %}
+                        <fieldset class="border p-3 rounded">
+                            <!-- Sélection de l'élève -->
+                            <div class="mb-3">
+                                <select class="form-control" name="eleve" required>
+                                    <option value="" disabled selected>Choisissez un élève</option>
+                                    {% for eleve in eleves %}
+                                    <option value="{{ eleve.id }}">{{ eleve.prenom }} - {{ eleve.nom }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- Sélection du professeur -->
+                            <div class="mb-3">
+                                <select class="form-control" name="professeur" required>
+                                    <option value="" disabled selected>Choisissez un professeur</option>
+                                    {% for professeur in professeurs %}
+                                    <option value="{{ professeur.id }}">{{ professeur.nom }} - {{ professeur.fonction }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <!-- Sélection de l'emploi du temps -->
+                            <div class="mb-3">
+                                <select id="emploitemps" name="emploitemps" class="form-control" required>
+                                    <option value="" disabled selected>Choisissez un emploi</option>
+                                    {% for emploi in emplois %}
+                                    <option value="{{ emploi.id }}">{{ emploi.jour }} - {{ emploi.heure_debut }} à {{ emploi.heure_fin }}</option>
+                                    {% endfor %}
+                                </select>
+                            </div>
+                            <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
+                        </fieldset>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des absences -->
+    {% for absence in absences_page_obj %}
+    <div class="row bg-light text-black text-center py-2 rounded">
+        <div class="col-md-1 col-6">
+            <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
+        </div>
+        <div class="col-md-5 col-6">
+            <p class="mb-0">{{ absence.eleve.prenom }} - {{ absence.eleve.nom }}</p>
+        </div>
+        <div class="col-md-4 col-6">
+            <p class="mb-0">{{ absence.eleve.niveau }}</p>
+        </div>
+        <div class="col-md-2 col-6">
+            {% if absence.id %}
+            <a href="{% url 'update_absence' absence.id %}">
+                <i class="bi bi-chevron-right" style="font-size: 1.5rem;"></i>
+            </a>
+            {% endif %}
+        </div>
+        <div class="col-md-1 col-6"></div>
+        <div class="col-md-11 col-6">
+            <hr class="border border-dark border-1 mt-2">
+        </div>
+    </div>
+    {% empty %}
+    <p class="text-center text-muted">Aucune absence enregistrée pour le moment.</p>
+    {% endfor %}
+
+    <!-- Pagination -->
+    {% if absences_page_obj.has_other_pages %}
+    <nav aria-label="Page navigation">
+        <ul class="pagination justify-content-center mt-3">
+            {% if absences_page_obj.has_previous %}
+            <li class="page-item">
+                <a class="page-link" href="?absences_page={{ absences_page_obj.previous_page_number }}" aria-label="Previous">&laquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&laquo;</span>
+            </li>
+            {% endif %}
+            {% for num in absences_page_obj.paginator.page_range %}
+            <li class="page-item {% if absences_page_obj.number == num %}active{% endif %}">
+                <a class="page-link" href="?absences_page={{ num }}">{{ num }}</a>
+            </li>
+            {% endfor %}
+            {% if absences_page_obj.has_next %}
+            <li class="page-item">
+                <a class="page-link" href="?absences_page={{ absences_page_obj.next_page_number }}" aria-label="Next">&raquo;</a>
+            </li>
+            {% else %}
+            <li class="page-item disabled">
+                <span class="page-link">&raquo;</span>
+            </li>
+            {% endif %}
+        </ul>
+    </nav>
+    {% endif %}
+</div>

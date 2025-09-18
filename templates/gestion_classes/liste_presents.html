@@ -1,0 +1,107 @@
+<div class="container">
+    <!-- En-tête -->
+    <div class="row py-2 align-items-center">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded">
+                <h5 class="text-white mx-2">Tous les cours du jour</h5>
+                <!-- Filtre -->
+               
+                <form method="get" class="d-flex align-items-center">
+                    <!-- Sélection du niveau -->
+                    <select name="niveau" id="niveau" class="form-select me-2">
+                        <option value="">Choix niveau </option>
+                        {% for num, nom in niveaux %}
+                            <option value="{{ num }}" {% if num|stringformat:"s" == niveau_selectionne|stringformat:"s" %}selected{% endif %}>
+                                {{ nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                  <!-- Sélection du jour -->
+                    <select name="jour" id="jour" class="form-select me-2">
+                        <option value="">Choix jour </option>
+                        {% for code, nom in jours_valides.items %}
+                            <option value="{{ code }}" {% if code == jour_selectionne %}selected{% endif %}>
+                                {{ nom }}
+                            </option>
+                        {% endfor %}
+                    </select>
+
+                    <button type="submit" class="btn btn-info text-white">Filtrer</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Liste des cours -->
+    {% if presences_page_obj %}
+        {% for emploi in presences_page_obj %}
+        <div class="row text-black text-center py-2 align-items-center rounded">
+            <!-- Avatar -->
+            <div class="col-2 col-md-1">
+                <div class="d-flex align-items-center justify-content-center rounded-circle border mx-auto" style="width: 40px; height: 40px;">
+                    <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
+                </div>
+            </div>
+            <!-- Informations sur le cours -->
+            <div class="col-5 col-md-4">
+                <p class="mb-0">{{ emploi.professeur.nom }}</p>
+            </div>
+            <div class="col-5 col-md-3">
+                <p class="mb-0">{{ emploi.professeur.fonction }}</p>
+            </div>
+            <div class="col-4 col-md-2">
+                <p class="mb-0">{{ emploi.eleve.niveau }}</p>
+            </div>
+            <!-- Bouton état -->
+            <div class="col-8 col-md-2 text-end">
+                <form method="post">
+                    {% csrf_token %}
+                    <input type="hidden" name="emploi_id" value="{{ emploi.id }}">
+                    <input type="hidden" name="etat" value="{% if emploi.etat == 'Effectué' %}Non effectué{% else %}Effectué{% endif %}">
+                    <button type="submit" class="btn btn-{% if emploi.etat == 'Effectué' %}success{% else %}danger{% endif %}">
+                        {{ emploi.etat }}
+                    </button>
+                </form>
+            </div>
+
+            <!-- Ligne horizontale -->
+            <div class="col-md-1 col-6"></div>
+            <div class="col-md-11 col-6">
+                <hr class="border border-dark border-1">
+            </div>
+        </div>
+        {% endfor %}
+    {% else %}
+            <div class="text-center">
+                <p>Aucune donnée à afficher pour aujourd'hui.</p>
+            </div>
+    {% endif %}
+
+    <!-- Pagination -->
+    {% if afficher_pagination %}
+    <div class="d-flex justify-content-center mt-3">
+        <nav>
+            <ul class="pagination">
+                {% if presences_page_obj.has_previous %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ presences_page_obj.previous_page_number }}&jour={{ jour_parametre }}">Précédent</a>
+                    </li>
+                {% endif %}
+
+                {% for num in presences_page_obj.paginator.page_range %}
+                    <li class="page-item {% if presences_page_obj.number == num %}active{% endif %}">
+                        <a class="page-link" href="?page={{ num }}&jour={{ jour_parametre }}">{{ num }}</a>
+                    </li>
+                {% endfor %}
+
+                {% if presences_page_obj.has_next %}
+                    <li class="page-item">
+                        <a class="page-link" href="?page={{ presences_page_obj.next_page_number }}&jour={{ jour_parametre }}">Suivant</a>
+                    </li>
+                {% endif %}
+            </ul>
+        </nav>
+    </div>
+    {% endif %}
+</div>

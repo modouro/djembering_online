@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
+    <title>Modifier Élève</title>
+</head>
+<body class="bg-light">
+    <div class="container-fluid mt-5 py-5">
+        <div class="row justify-content-center">
+            <div class="col-12 col-md-6 col-lg-4">
+                <h1 class="text-center mb-4">Modifier l'Élève</h1>
+                <form method="POST" action="{% url 'update_eleve' eleve.id %}">
+                    {% csrf_token %}
+                    <fieldset class="border p-4 rounded bg-white shadow">
+                        <!-- Prénom -->
+                         <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Prénoms :
+                                </span>
+                                <input type="text" class="form-control border-0 fs-6" aria-label="Username" aria-describedby="basic-addon1" id="prenom" name="prenom" value="{{ eleve.prenom }}" required>
+                                <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <!-- Nom -->
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Nom :
+                                </span>
+                            <input type="text" class="form-control border-0 fs-6" id="nom" name="nom" value="{{ eleve.nom }}" required>
+                             <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <!-- Date de naissance -->
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Date de naissance :
+                                </span>
+                            <input type="date" class="form-control border-0 fs-6" id="date_naissance" name="date_naissance" value="{{ eleve.date_naissance|date:'Y-m-d' }}" required>
+                             <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>   
+                        </div>
+                        <!-- Lieu de naissance -->
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Lieu de naissance :
+                                </span>
+                            <input type="text" class="form-control border-0 fs-6" id="lieu_naissance" name="lieu_naissance" value="{{ eleve.lieu_naissance }}" required>
+                            <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <!-- Sexe -->
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Genre :
+                                </span>
+                                <select id="sexe" name="sexe" class="form-select border-0 fs-6" required>
+                                    <option value="M" {% if eleve.sexe == "M" %}selected{% endif %}>Masculin</option>
+                                    <option value="F" {% if eleve.sexe == "F" %}selected{% endif %}>Féminin</option>
+                                </select>
+                             <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <!-- Adresse -->
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Adresse : 
+                                </span>
+                            <input type="text" class="form-control border-0 fs-6" id="adresse" name="adresse" value="{{ eleve.adresse }}" required>
+                            <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <!-- Niveau -->
+                        <div class="row mb-3 border border-1 rounded">
+                            <div class="col-12 d-flex align-items-center justify-content-center">
+                                <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
+                                    Niveau :
+                                </span>
+                            <select id="niveau" class="form-select border-0 fs-6" name="niveau" required>
+                                <option value="3" {% if eleve.niveau == "3" %}selected{% endif %}>3</option>
+                                <option value="4" {% if eleve.niveau == "4" %}selected{% endif %}>4</option>
+                                <option value="5" {% if eleve.niveau == "5" %}selected{% endif %}>5</option>
+                                <option value="6" {% if eleve.niveau == "6" %}selected{% endif %}>6</option>
+                            </select>
+                            <!-- Icône de modification -->
+                                <i class="bi bi-pencil"></i>
+                            </div>
+                        </div>
+                        <!-- Bouton Modifier -->
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-primary">Modifier</button>
+                        </div>
+                    </fieldset>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-cjvrRttwKlE0GqUVD8h0JwPbnjBrewQu5X1gAwf11QmXm7s5FLKp37nD4xm1Nf2C" crossorigin="anonymous"></script>
+</body>
+</html>

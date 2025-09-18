@@ -1,0 +1,32 @@
+<div class="container-fluid">
+    <div class="row align-items-center">
+        <!-- Espace à gauche -->
+        {% comment %} <div class="col-md-1"></div> {% endcomment %}
+        <div class="col-1 d-none d-md-block"></div>
+
+        <!-- Colonne contenant l'image ronde centrée avec un fond coloré -->
+        {% comment %} <div class="col-md-2 text-center " style="position: relative; overflow: visible;"> {% endcomment %}
+        <div class="col-12 col-md-1 text-center position-relative p-0">
+            {% comment %} <div class="bg-primary  rounded-circle"  style="position: absolute; top: -40px; left: 10%; transform: translateX(-50%); z-index: 10;"> {% endcomment %}
+            <div class="bg-primary  rounded-circle "  
+                    style="width:130px; height:130px; position: relative; top: -10px; z-index: 1;">
+                {% comment %} <img src="/static/images/rv_imzge.jpg" class="rounded-circle d-flex justify-content-center align-items-center" width="150" height="150" style="position: absolute; z-index: 10;"> {% endcomment %} 
+                <img src="/static/images/rv_imzge.jpg" 
+                class="rounded-circle" 
+                width="140" 
+                height="140" 
+                style="position: absolute; top:0; left:0;">
+            </div>
+            
+        </div>
+
+        <!-- Colonne avec un arrière-plan coloré -->
+        {% comment %} <div class="col-md-9 bg-primary"> {% endcomment %}
+        <div class="col-12 col-md-10 bg-primary" style="margin-top: -10px;">
+            {% comment %} <h2 class="text-capitalize text-white ms-5"> {% endcomment %} 
+            <h2 class="text-capitalize text-white align-content-center ms-md-5 my-1 w-100  text-sm-center"> 
+                Mon compte 
+            </h2>
+        </div>
+    </div>
+</div>
