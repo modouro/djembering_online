@@ -1,39 +1,48 @@
 <div class="d-flex flex-wrap justify-content-center gap-3 p-1">
-    <div class="">
-        <a href="{% url 'sections' section='0' %}" class="d-flex justify-content-center align-items-center rounded shadow nav-link 
-               {% if section == '0' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '0' %}bg-white text-primary{% else %}bg-success text-white{% endif %}" 
-         style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
-          <span class="display-5 fw-bold">+</span>
+   <div class="container my-4">
+    <!-- Menu principal : utilisation de d-flex pour aligner les boutons horizontalement et centrer -->
+    <div class="d-flex justify-content-center gap-2 flex-wrap">
+        <!-- Bouton "+" -->
+        <a href="{% url 'sections' section='0' %}"
+           class="d-flex justify-content-center align-items-center rounded shadow nav-link
+                  {% if section == '0' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '0' %}bg-white text-primary{% else %}bg-success text-white{% endif %}"
+           style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
+            <span class="display-5 fw-bold">+</span>
         </a>
-    </div>
-    <div class="">
-        <a href="{% url 'sections' section='6' %}" class="d-flex justify-content-center align-items-center rounded shadow nav-link 
-               {% if section == '6' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '6' %}bg-white text-primary{% else %}bg-success text-white{% endif %}" 
-         style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
-          <span class="display-5 fw-bold">6</span>
+
+        <!-- Bouton "6" -->
+        <a href="{% url 'sections' section='6' %}"
+           class="d-flex justify-content-center align-items-center rounded shadow nav-link
+                  {% if section == '6' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '6' %}bg-white text-primary{% else %}bg-success text-white{% endif %}"
+           style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
+            <span class="display-5 fw-bold">6</span>
         </a>
-    </div>
-    <div class="">
-        <a href="{% url 'sections' section='5' %}" class="d-flex justify-content-center align-items-center rounded shadow nav-link 
-               {% if section == '5' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '5' %}bg-white text-primary{% else %}bg-success text-white{% endif %}" 
-         style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
-          <span class="display-5 fw-bold">5</span>
+
+        <!-- Bouton "5" -->
+        <a href="{% url 'sections' section='5' %}"
+           class="d-flex justify-content-center align-items-center rounded shadow nav-link
+                  {% if section == '5' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '5' %}bg-white text-primary{% else %}bg-success text-white{% endif %}"
+           style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
+            <span class="display-5 fw-bold">5</span>
         </a>
-    </div>
-    <div class="">
-         <a href="{% url 'sections' section='4' %}" class="d-flex justify-content-center align-items-center rounded shadow nav-link 
-               {% if section == '4' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '4' %}bg-white text-primary{% else %}bg-success text-white{% endif %}" 
-           style="width: 50px; height: 50px; font-size: 24px; font-weight: bold; text-decoration: none;">
+
+        <!-- Bouton "4" -->
+        <a href="{% url 'sections' section='4' %}"
+           class="d-flex justify-content-center align-items-center rounded shadow nav-link
+                  {% if section == '4' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '4' %}bg-white text-primary{% else %}bg-success text-white{% endif %}"
+           style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
             <span class="display-5 fw-bold">4</span>
         </a>
-    </div>
-    <div class="">
-        <a href="{% url 'sections' section='3' %}" class="d-flex justify-content-center align-items-center rounded shadow nav-link 
-               {% if section == '3' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '3' %}bg-white text-primary{% else %}bg-success text-white{% endif %}" 
-               style="width: 50px; height: 50px; font-size: 20px; font-weight: bold;">
+
+        <!-- Bouton "3" -->
+        <a href="{% url 'sections' section='3' %}"
+           class="d-flex justify-content-center align-items-center rounded shadow nav-link
+                  {% if section == '3' %}bg-white text-primary{% elif request.resolver_match.url_name == 'sections' and section == '3' %}bg-white text-primary{% else %}bg-success text-white{% endif %}"
+           style="width: 50px; height: 50px; font-size: 20px; font-weight: bold; text-decoration: none;">
             <span class="display-5 fw-bold">3</span>
         </a>
     </div>
+</div>
 
     <div id="section0" class="container py-1 {% if section == '0' %} d-block {% else %} d-none {% endif %}">
         <!-- En-tête -->
@@ -41,19 +50,19 @@
             <div class="col-md-1 col-6">
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Niveau</h6>
+                <h6 class="fw-bold bg-dark text-white">Niveau</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Heures dues</h6>
+                <h6 class="fw-bold bg-dark text-white">Heures dues</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Heures faites</h6>
+                <h6 class="fw-bold bg-dark text-white">Heures faites</h6>
             </div>
             <div class="col-md-3 col-6">
-                <h6 class="fw-bold">Heures compensées</h6>
+                <h6 class="fw-bold bg-dark text-white">Heures compensées</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Moyenne</h6>
+                <h6 class="fw-bold bg-dark text-white">Moyenne</h6>
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -252,26 +261,26 @@
 
             </div>
             <div class="col-md-1 col-6">
-                <h6 class="fw-bold">Niveau</h6>
+                <h6 class="fw-bold bg-dark text-white">Niveau</h6>
             </div>
 
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Classes</h6>
+                <h6 class="fw-bold bg-dark text-white">Classes</h6>
             </div>
 
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Heures dues</h6>
+                <h6 class="fw-bold bg-dark text-white">Heures dues</h6>
             </div>
 
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Heures faites</h6>
+                <h6 class="fw-bold bg-dark text-white">Heures faites</h6>
             </div>
 
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Heures Comp.</h6>
+                <h6 class="fw-bold bg-dark text-white">Heures Comp.</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Ratio (%)</h6>
+                <h6 class="fw-bold bg-dark text-white">Ratio (%)</h6>
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -339,9 +348,12 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a  href="" class="btn btn-primary btn-xs">
+                {% comment %} <a  href="" class="btn btn-primary btn-xs">
                     <i class="bi bi-pencil-square"></i> 
-                </a>
+                </a> {% endcomment %}
+                <button class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#updateHeuresModal">
+                    🔄 {% comment %} <i class="bi bi-pencil-square"></i> {% endcomment %}
+                </button>
             </div>
             <div class="col-md-4 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
@@ -350,6 +362,12 @@
             </div>
         </div>
     </div>
+
+
+</div>
+
+
+
 
     <div id="section5" class="container py-1 {% if section == '5' %} d-block {% else %} d-none {% endif %}">
         {% if heures %}

@@ -12,6 +12,33 @@
         </div>
     </div>
 
+
+<div class="row py-2">
+    <div class="col-12">
+        <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded px-2">
+            <!-- Titre -->
+            <h5 class="text-white m-0">Liste des élèves</h5>
+
+            <!-- Sélecteur de niveau -->
+            <form method="get" class="d-flex align-items-center">
+                <select name="niveau" class="form-select form-select-sm me-2" style="width: auto;" onchange="this.form.submit()">
+                    <option value="">Tous les niveaux</option>
+                    {% for n in niveaux %}
+                        <option value="{{ n }}" {% if request.GET.niveau == n %}selected{% endif %}>{{ n }}</option>
+                    {% endfor %}
+                </select>
+            </form>
+
+            <!-- Bouton + pour le modal -->
+            <a href="#" data-bs-toggle="modal" data-bs-target="#addEleveModal">
+                <i class="bi bi-plus-circle-fill bg-white text-dark rounded-circle" style="font-size: 1.5rem;"></i>
+            </a>
+        </div>
+    </div>
+</div>
+
+
+
     <!-- Modal -->
     <div class="modal fade" id="addEleveModal" tabindex="-1" aria-labelledby="addEleveModalLabel" aria-hidden="true">
         <div class="modal-dialog">

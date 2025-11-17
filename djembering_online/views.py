@@ -8,6 +8,8 @@ from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse
 from datetime import datetime, timedelta
 from django.utils.http import urlencode
+from django.views.decorators.http import require_POST
+from datetime import date
 from django.utils.timezone import now
 from django.contrib import messages
 from django.db.models import F, Sum
@@ -16,15 +18,16 @@ from django.contrib.auth.hashers import make_password
 from .forms import  LoginForm, ElevesForm
 
 def home(request):
-    # Récupérer les statistiques nécessaires pour l'index
-   
+  
     context = {
         'message': 'Bienvenue Mamadou',
     }
     return render(request, 'pages/index.html', context)
+
 def dashboard_view(request):
     
     return render(request, 'pages/dashboard.html')
+
 def admin_view(request):
     total_eleves = Eleves.objects.count()
     total_professeurs = Professeur.objects.count()
@@ -56,29 +59,22 @@ def admin_view(request):
     }
 
     return render(request, 'gestions/admin.html', context)
-# --------------------- afficher le nombre d'éléves et le nombre de professeur existant dans la base de données ---------
+
 def get_totals_context():
-    """ 
-       Retourne le contexte contenant les totaux d'élèves et de professeurs. 
-    """
-    return{
+    return
+{
         "total_eleves": Eleves.objects.count(),
         "total_professeurs": Professeur.objects.count(),
-    }
+        }
+
 def get_heures_par_section(section):
-    """
-    Fonction utilitaire pour récupérer les heures selon la section
-    """
-    try:
-        section_int = int(section)
+    try:section_int = int(section)
     except (ValueError, TypeError):
         section_int = None
-
-    # Base queryset 
+        # Base queryset 
     heures_qs = CalculHeures.objects.select_related(
         "emploitemps", "emploitemps__eleve"
-    )
-
+        )
     # Si la section est bien un chfifre valide, on filtre
     if section_int:
         heures_qs = heures_qs.filter(emploitemps__eleve__niveau=section_int)
@@ -101,6 +97,7 @@ def get_heures_par_section(section):
     )
     return section, heures
 # Vue pour /gestion_here/ ou /gestion_heure/?section=3 ou /gestion/heure/3/
+
 def gestion_heures_view(request, section=None):
     if section is None:
         section = request.GET.get("section", "0")
@@ -167,6 +164,24 @@ def ajouter_calcul_heures(request):
         'emploitemps': emploitemps,
         'section': section
     })
+
+@require_POST
+def mettre_a_jour_heures(request):
+    # Recalculer toutes les heures pour tous les emplois
+    emplois = EmploiTemps.objects.all()
+
+    for emploi in emplois:
+        calcul, created = CalculHeures.objects.get_or_create(emploitemps=emploi)
+        duree = emploi.duree_heures
+
+        calcul.heures_dues = duree
+        calcul.heures_faites = duree if emploi.etat == "Effectué" else 0
+        calcul.heures_complementaires = max(0, calcul.heures_faites - duree)
+        calcul.date_changement = date.today()
+        calcul.save()
+
+    messages.success(request, f"Heures mises à jour pour {emplois.count()} emploi(s).")
+    return redirect(request.META.get("HTTP_REFERER", "/"))
 
 def edit_calcul_heures(request, calcul_id):
     # Récupération de l'objet CalculHeures à modifier
@@ -235,6 +250,7 @@ def gestions_emploi_view(request, sector=None, day=None):
     # Fusion avec tes totaux existants
     total_context = get_totals_context()
     context.update(total_context)
+    
     return render(request, 'gestions/gestions_emploi.html', context)
 
 
@@ -296,6 +312,8 @@ def add_emploi_view(request):
         "heure_fin_default": heure_fin_default,
     }
     return render(request, "formulaire/ajouter_emploi.html", context)
+
+
 def update_emploi(request, emploi_id):
     emploi = get_object_or_404(EmploiTemps, id=emploi_id)
 
@@ -346,213 +364,9 @@ def delete_emploi(request, emploi_id):
 
     # Si méthode GET, afficher la page de confirmation
     return render(request, 'modifications/confirm_delete.html', {'emploi': emploi})
+
+
 # ------------------------------------------- debut gestion classe et fin add emploi -----------------------------------
-""" def gestion_classe_view(request):
-   
-    if request.method == "POST" and "emploi_id" in request.POST and "etat" in request.POST:
-        emploi_id = request.POST.get("emploi_id")
-        nouvel_etat = request.POST.get("etat")
-        
-        emploi = get_object_or_404(EmploiTemps, id=emploi_id)
-
-        
-        try:
-            calcul_heures = CalculHeures.objects.get(emploitemps=emploi)
-        except CalculHeures.DoesNotExist:
-           
-            url = reverse('add_heure')  # génère l'URL pour la vue 'add_heure', ex: '/add_heure/'
-
-            query_params = f'?emploitemps={emploi.id}'
-
-            return redirect(url + query_params) 
-            
-        # Calculer les heures à partir de l'emploi du temps
-        heure_debut = emploi.heure_debut
-        heure_fin = emploi.heure_fin
-        heures_calculees = calcul_heures.calculer_heures(heure_debut, heure_fin)
-
-        # Vérifier la date actuelle et la date du dernier changement
-        aujourd_hui = datetime.now().date()
-        date_dernier_changement = calcul_heures.date_changement        
-
-        if date_dernier_changement != aujourd_hui:
-            if nouvel_etat != "Effectué":
-                # Sauvegarder l'état sans modifier `heures_faites`
-                calcul_heures.date_changement = aujourd_hui
-            else:
-                # Réinitialiser l'état et ajuster les heures
-                calcul_heures.heures_faites -= heures_calculees # à modifier ------ 
-                emploi.etat = "Non effectué"
-                calcul_heures.date_changement = aujourd_hui
-        else:
-            # Cas normal : modifier les heures si nécessaire
-            if emploi.etat == "Effectué" and nouvel_etat != "Effectué":
-                # Si l'état passe de "Effectué" à autre chose, décrémenter les heures
-                calcul_heures.heures_faites -= heures_calculees
-                calcul_heures.save(update_fields=['heures_faites'])
-            elif emploi.etat != "Effectué" and nouvel_etat == "Effectué":
-                # Si l'état passe de non "Effectué" à "Effectué", incrémenter les heures
-                calcul_heures.heures_faites += heures_calculees
-                calcul_heures.save(update_fields=['heures_faites'])
-
-        # Mettre à jour l'état et sauvegarder
-        emploi.etat = nouvel_etat
-        emploi.save(update_fields=['etat'])
-        calcul_heures.save()
-
-        # Redirection après mise à jour
-        return redirect('gestion_classe')
-
-    # ----------------- les données pour la liste des eleves  ---------------- 
-    eleves = Eleves.objects.all().order_by('id')
-    eleves_paginator = Paginator(eleves, 2)
-    eleves_page_number = request.GET.get('page_eleves', 1)  
-    try:
-        eleves_page_obj = eleves_paginator.page(eleves_page_number)
-    except(PageNotAnInteger, EmptyPage):
-        eleves_page_obj = eleves_paginator.page(1)
-    
-    # limitatin des page à afficher 
-    afficher_pagination_eleve = eleves_paginator.num_pages > 2
-
-    #----------------- les données pour la liste des professseurs ---------------- 
-    professeurs = Professeur.objects.all().order_by('id')
-    professeur_paginator = Paginator(professeurs, 2) # 2 professeur par page
-    professeur_page_number = request.GET.get('page_professeur', 1)
-
-    # Vérification si la pagination est nécessaire
-    afficher_pagination_professeur = professeur_paginator.num_pages > 1
-    try:
-        professeur_page_obj = professeur_paginator.page(professeur_page_number)
-    except(PageNotAnInteger, EmptyPage):
-        professeur_page_obj = professeur_paginator.page(1)
-
-    # ----------------- les données pour la liste des absents ---------------- 
-
-    # Récupérer toutes les absences avec leurs relations associées
-    absences = Absence.objects.select_related('eleve', 'emploitemps').all().order_by('-emploitemps__jour', '-emploitemps__heure_debut')
-
-    # Pagination
-    absences_paginator = Paginator(absences, 2)  # 2 éléments par page
-    absences_page_number = request.GET.get('page', 1)  # Paramètre GET pour la pagination
-
-    # Vérification si la pagination est nécessaire 
-    afficher_pagination_absent = absences_paginator.num_pages > 1
-    try:
-        absences_page_obj = absences_paginator.page(absences_page_number)
-    except PageNotAnInteger:
-        absences_page_obj = absences_paginator.page(1)
-    except EmptyPage:
-        absences_page_obj = absences_paginator.page(absences_paginator.num_pages)
-
-    # ----------- les données pour la liste des présents--------------------- 
-    # Déterminer le jour actuel (en français)
-    jour_actuel = datetime.now().strftime('%A')  # Jour en anglais
-    jours_valides = dict(EmploiTemps._meta.get_field('jour').choices)
-    #jour_actuel_fr = {v: k for k, v in jours_valides.items()}.get(jour_actuel)  # Traduire en français
-
-    # Récupérer le jour depuis le formulaire ou utiliser le jour actuel
-    jour_parametre = request.GET.get('jour', jour_actuel_fr)  # Par défaut, jour actuel
-
-    if jour_parametre in jours_valides:  # Vérifier que le jour est valide
-        emplois = EmploiTemps.objects.filter(jour=jour_parametre)
-    else:
-        emplois = EmploiTemps.objects.none()
-    # Pagination
-    nbre_page = 2
-    paginator = Paginator(emplois, nbre_page)
-    page_number = request.GET.get('page', 1)
-
-    try:
-        presences_page_obj = paginator.page(page_number)
-    except (PageNotAnInteger, EmptyPage):
-        presences_page_obj = paginator.page(1)
-
-    # vérifier si la pagination est nécessaire
-    afficher_pagination = paginator.num_pages > 2
-    # Gestion du changement d'état via POST
-    if request.method == "POST" and "emploi_id" in request.POST and "etat" in request.POST:
-        emploi_id = request.POST.get("emploi_id")
-        nouveau_etat = request.POST.get("etat")
-        emploi = get_object_or_404(EmploiTemps, id=emploi_id)
-
-        if nouveau_etat in ['Effectué', 'Non effectué']:
-            emploi.etat = nouveau_etat
-            emploi.save()
-        return redirect('gestion_classe')  # Redirection après mise à jour
-    total_context = get_totals_context()
-
-    emplois = EmploiTemps.objects.all()
-
-    # Déterminer le jour actuel (en français)
-    jour_actuel = datetime.now().strftime('%A')  # Jour en anglais
-    jours_valides_dict = dict(EmploiTemps._meta.get_field('jour').choices)
-    jours_tous = list(jours_valides_dict.values())  # Tous les jours définis dans le modèle
-    jour_actuel_fr = {v: k for k, v in jours_valides_dict.items()}.get(jour_actuel)
-
-    # Récupérer le niveau et le jour depuis le GET
-    niveau_param = request.GET.get("niveau")
-    jour_parametre = request.GET.get("jour", jour_actuel_fr)  # Par défaut, jour actuel
-
-    niveau_selectionne = request.GET.get("niveau")
-    jour_selectionne = request.GET.get("jour")
-
-    emplois = EmploiTemps.objects.all()
-
-    # Filtrer par niveau uniquement si le paramètre est valide
-    if niveau_selectionne and niveau_selectionne.isdigit():
-        emplois = emplois.filter(niveau=int(niveau_selectionne))
-
-    # Filtrer par jour uniquement si le paramètre est valide
-    jours_valides = dict(EmploiTemps._meta.get_field('jour').choices)
-    if jour_selectionne in jours_valides:
-        emplois = emplois.filter(jour=jour_selectionne)
-
-    # Pagination
-    nbre_page = 2
-    paginator = Paginator(emplois, nbre_page)
-    page_number = request.GET.get('page', 1)
-    try:
-        presences_page_obj = paginator.page(page_number)
-    except (PageNotAnInteger, EmptyPage):
-        presences_page_obj = paginator.page(1)
-
-    afficher_pagination = paginator.num_pages > 2
-
-    # Gestion du changement d'état
-    if request.method == "POST" and "emploi_id" in request.POST and "etat" in request.POST:
-        emploi_id = request.POST.get("emploi_id")
-        nouveau_etat = request.POST.get("etat")
-        emploi = get_object_or_404(EmploiTemps, id=emploi_id)
-        if nouveau_etat in ['Effectué', 'Non effectué']:
-            emploi.etat = nouveau_etat
-            emploi.save()
-        return redirect('gestion_classe')
-
-    # Contexte
-    total_context = get_totals_context()
-    context =  {
-        'eleves_page_obj': eleves_page_obj,
-        'eleves': eleves,
-        'afficher_pagination_eleve': afficher_pagination_eleve,
-        'professeur_page_obj': professeur_page_obj,
-        'afficher_pagination_professeur': afficher_pagination_professeur,
-        'absences_page_obj': absences_page_obj,
-        'afficher_pagination_absent': afficher_pagination_absent,
-        'presences_page_obj': presences_page_obj,
-        'jour': jour_parametre,  # Passer le jour sélectionné ou actuel au template
-        'jours_valides': jours_valides.values(),  # Fournir tous les jours pour le formulaire
-        #'jours_valides': jours_niveau,  # seulement jours de ce niveau
-        'niveau_param': niveau_param,
-        'afficher_pagination': afficher_pagination,
-        'professeurs': professeurs,
-        'emplois': emplois,
-        }
-    # fusionner les deux dictionaires
-    context.update(total_context)
-    return render(request, 'gestions/gestion_classes.html', context) 
- """
-
 def update_emploi_et_heures(request):
     """
     Gère la mise à jour de l'état d'un emploi du temps et ajuste les heures faites en conséquence.
@@ -607,9 +421,15 @@ def gestion_classe_view(request):
     if request.method == "POST" and "emploi_id" in request.POST and "etat" in request.POST:
         update_emploi_et_heures(request)
         return redirect('gestion_classe')
+    
+    niveau_filtre = request.GET.get("niveau")
 
     # Récupération et pagination des élèves
     eleves = Eleves.objects.all().order_by('id')
+
+    if niveau_filtre:
+        eleves = eleves.filter(niveau=niveau_filtre)
+
     eleves_page_obj, afficher_pagination_eleve = paginate_queryset(request, eleves, per_page=2, page_param='page_eleves')
 
     # Récupération et pagination des professeurs
@@ -666,8 +486,8 @@ def gestion_classe_view(request):
     niveaux = [(n, f"Classe {n}") for n in niveaux_raw if n is not None]
 
     # Récupération de totaux (supposée exister dans ton code)
-    total_context = get_totals_context()
-
+    total_context = get_totals_context() or {}
+    
     context = {
         'eleves_page_obj': eleves_page_obj,
         'afficher_pagination_eleve': afficher_pagination_eleve,
@@ -683,6 +503,7 @@ def gestion_classe_view(request):
         'niveaux': niveaux,
         'professeurs': professeurs,
         'emplois': emplois,
+        'niveau_filtre': niveau_filtre,
     }
     context.update(total_context)
 
@@ -809,7 +630,6 @@ def update_eleve_view(request, eleve_id):
         'eleve': eleve,
     }
     return render(request, 'modifications/modif_eleve.html', context)
-
 #----------------------------------------------------------------------
 def add_absence_view(request):
     if request.method == 'POST':

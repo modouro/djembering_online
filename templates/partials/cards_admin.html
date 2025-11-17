@@ -1,65 +1,116 @@
-<div class="container-fluid py-2">
-    <div class="row row-cols-1 row-cols-md-3 g-4 justify-content-center">
-      <!-- Cercle 1 -->
-      <div class="col d-flex justify-content-center">
-        <a href=" {% url "gestion_emploi" %} " class="text-decoration-none text-uppercase">
-          <div 
-            class="rounded-circle bg-primary d-flex justify-content-center align-items-center text-white"
-            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
-            Emplois {{ total_emplois }}
-          </div>
-        </a>
-      </div>
-      <!-- Cercle 2 -->
-      <div class="col d-flex justify-content-center">
-        <a href=" {% url "gestions_heure" %} " class="text-decoration-none text-uppercase">
-          <div 
-            class="rounded-circle bg-danger d-flex justify-content-center align-items-center text-white"
-            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
-            Heures {{ total_heures }}
-          </div>
-        </a>
-      </div>
-      <!-- Cercle 3 -->
-      <div class="col d-flex justify-content-center">
-        <a href=" " class="text-decoration-none text-uppercase">
-          <div 
-            class="rounded-circle bg-success d-flex justify-content-center align-items-center text-white"
-            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
-            Effectifs {{ total_eleves }}
-          </div>
-        </a>
-      </div>
-      <!-- Cercle 4 -->
-      <div class="col d-flex justify-content-center">
-        <a href=" {% url "gestion_classe" %} " class="text-decoration-none text-uppercase">
-          <div 
-            class="rounded-circle bg-warning d-flex justify-content-center align-items-center text-white"
-            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
-            Enseignants {{ total_professeurs }}
-          </div>
-        </a>
-      </div>
-      <!-- Cercle 5 -->
-      <div class="col d-flex justify-content-center">
-        <a href=" {% url "gestion_emploi" %} " class="text-decoration-none text-uppercase">
-          <div 
-            class="rounded-circle bg-info d-flex justify-content-center align-items-center text-white"
-            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
-            Absents {{ total_absences }}
-          </div>
-        </a>
-      </div>
-      <!-- Cercle 6 -->
-      <div class="col d-flex justify-content-center">
-        <a href=" {% url "add_autorisation" %} " class="text-decoration-none text-uppercase">
-          <div 
-            class="rounded-circle bg-secondary d-flex justify-content-center align-items-center text-white"
-            style="width: 180px; height: 180px; font-size: 20px; font-weight: bold;">
-            Autorisés {{ total_conges }}
-          </div>
-        </a>
-      </div>
+ <div class="container-fluid py-4">
+
+        <!-- Titre principal -->
+        <h2 class="mb-4 text-center fw-bold text-secondary">Tableau de bord administratif</h2>
+
+        <!-- ======= Cartes d'informations ======= -->
+        <div class="row row-cols-1 row-cols-md-3 row-cols-lg-3 g-4">
+            
+            <!-- Carte : Emplois -->
+            <div class="col">
+              <a href=" {% url "gestion_emploi" %} " class="text-decoration-none text-uppercase">
+                <div class="card text-white bg-primary shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-briefcase-fill fs-1"></i>
+                        <h5 class="card-title mt-2">Emplois</h5>
+                        <p class="card-text fs-4 fw-bold">
+                          {{ total_emplois }}
+                        </p>
+                    </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Carte : Heures -->
+            <div class="col">
+              <a href=" {% url "gestions_heure" %} " class="text-decoration-none text-uppercase">
+                <div class="card text-white bg-success shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-clock-fill fs-1"></i>
+                        <h5 class="card-title mt-2">Heures</h5>
+                        <p class="card-text fs-4 fw-bold">
+                          {{ total_heures }}
+                        </p>
+                    </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Carte : Effectifs -->
+            <div class="col">
+              <a href=" " class="text-decoration-none text-uppercase">
+                <div class="card text-white bg-warning shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-people-fill fs-1"></i>
+                        <h5 class="card-title mt-2">Effectifs</h5>
+                        <p class="card-text fs-4 fw-bold">
+                          {{ total_eleves }}
+                        </p>
+                    </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Carte : Enseignants -->
+            <div class="col">
+              <a href=" {% url "gestion_classe" %} " class="text-decoration-none text-uppercase">
+                <div class="card text-white bg-info shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-person-badge-fill fs-1"></i>
+                        <h5 class="card-title mt-2">Enseignants</h5>
+                        <p class="card-text fs-4 fw-bold">
+                          {{ total_professeurs }}
+                        </p>
+                    </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Carte : Absents -->
+            <div class="col">
+              <a href=" {% url "gestion_emploi" %} " class="text-decoration-none text-uppercase">
+                <div class="card text-white bg-danger shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-exclamation-circle-fill fs-1"></i>
+                        <h5 class="card-title mt-2">Absents</h5>
+                        <p class="card-text fs-4 fw-bold">
+                          {{ total_absences }}
+                        </p>
+                    </div>
+                </div>
+              </a>
+            </div>
+
+            <!-- Carte : Autorisations -->
+            <div class="col">
+              <a href=" {% url "add_autorisation" %} " class="text-decoration-none text-uppercase">
+                <div class="card text-white bg-secondary shadow-sm">
+                    <div class="card-body text-center">
+                        <i class="bi bi-shield-check fs-1"></i>
+                        <h5 class="card-title mt-2">Autorisations</h5>
+                        <p class="card-text fs-4 fw-bold">
+                          {{ total_conges }}
+                        </p>
+                    </div>
+                </div>
+              </a>
+            </div>
+        </div>
+
+        <!-- ======= Section complémentaire ======= -->
+        <div class="mt-5">
+            <div class="card shadow-sm">
+                <div class="card-header bg-dark text-white fw-bold">
+                    <i class="bi bi-bar-chart-line"></i> Statistiques générales
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">
+                        Ce tableau de bord vous permet de visualiser les données clés sur les emplois du temps,
+                        le nombre d'heures effectuées, les effectifs totaux, les enseignants disponibles, ainsi
+                        que les absences et les autorisations en cours.
+                    </p>
+                    <button class="btn btn-primary"><i class="bi bi-download"></i> Exporter les données</button>
+                </div>
+            </div>
+        </div>
     </div>
-  </div>
-  

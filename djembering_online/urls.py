@@ -2,7 +2,7 @@ from django.urls import path
 from .views import (
      home, dashboard_view, 
      admin_view, gestion_heures_view, ajouter_calcul_heures,
-     add_autorisation_view, update_autorisation_view, edit_calcul_heures,
+     add_autorisation_view, update_autorisation_view, edit_calcul_heures, mettre_a_jour_heures,
      gestions_emploi_view, add_emploi_view, update_emploi, delete_emploi,
      gestion_classe_view, add_absence_view, update_absence_view,
      add_professeur_view, update_professeur_view, add_eleves_view, update_eleve_view,
@@ -18,6 +18,8 @@ urlpatterns = [
     path('sections/<str:section>/', sections_view, name="sections"),
     path('add_heure/', ajouter_calcul_heures, name='add_heure'),
     path('edit_heures/<int:id>/edit/', edit_calcul_heures, name='edit_heures'),
+    path("mettre-a-jour-heures/", mettre_a_jour_heures, name="mettre_a_jour_heures"),
+
 
     path('gestion_classe/', gestion_classe_view, name='gestion_classe'), 
     path('add_absences/', add_absence_view, name='add_absences'),
