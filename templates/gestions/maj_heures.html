@@ -1,0 +1,23 @@
+{% extends "bases.html" %}
+
+{% block content %}
+<div class="container mt-5">
+    <h2>Mise à jour des heures</h2>
+    
+    {% if messages %}
+        {% for message in messages %}
+            <div class="alert alert-{{ message.tags }}">
+                {{ message }}
+            </div>
+        {% endfor %}
+    {% endif %}
+
+    <form method="post" action="{% url 'mettre_a_jour_heures' %}">
+        {% csrf_token %}
+        <button type="submit" class="btn btn-success">Mettre à jour toutes les heures</button>
+    </form>
+
+    <hr>
+    <a href="{% url 'gestion_classe' %}" class="btn btn-secondary">Retour à la gestion des classes</a>
+</div>
+{% endblock %}

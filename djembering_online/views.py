@@ -62,7 +62,7 @@ def admin_view(request):
 
 def get_totals_context():
     return
-{
+    {
         "total_eleves": Eleves.objects.count(),
         "total_professeurs": Professeur.objects.count(),
         }
@@ -165,23 +165,28 @@ def ajouter_calcul_heures(request):
         'section': section
     })
 
-@require_POST
+# Page avec le bouton pour lancer la mise à jour
+def page_maj_heures(request):
+    return render(request, 'gestions/maj_heures.html')
+
+# Vue qui recalcul toutes les heures
 def mettre_a_jour_heures(request):
-    # Recalculer toutes les heures pour tous les emplois
-    emplois = EmploiTemps.objects.all()
+    if request.method == "POST":
+        emplois = EmploiTemps.objects.all()
 
-    for emploi in emplois:
-        calcul, created = CalculHeures.objects.get_or_create(emploitemps=emploi)
-        duree = emploi.duree_heures
+        for emploi in emplois:
+            calcul, created = CalculHeures.objects.get_or_create(emploitemps=emploi)
+            duree = emploi.duree_heures
 
-        calcul.heures_dues = duree
-        calcul.heures_faites = duree if emploi.etat == "Effectué" else 0
-        calcul.heures_complementaires = max(0, calcul.heures_faites - duree)
-        calcul.date_changement = date.today()
-        calcul.save()
+            calcul.heures_dues = duree
+            calcul.heures_faites = duree if emploi.etat == "Effectué" else 0
+            calcul.heures_complementaires = max(0, calcul.heures_faites - duree)
+            calcul.date_changement = date.today()
+            calcul.save()
 
-    messages.success(request, f"Heures mises à jour pour {emplois.count()} emploi(s).")
-    return redirect(request.META.get("HTTP_REFERER", "/"))
+        messages.success(request, f"Heures mises à jour pour {emplois.count()} emploi(s).")
+    return redirect('page_maj_heures')
+
 
 def edit_calcul_heures(request, calcul_id):
     # Récupération de l'objet CalculHeures à modifier
