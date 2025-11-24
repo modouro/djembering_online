@@ -166,13 +166,26 @@ def ajouter_calcul_heures(request):
     })
 
 # Page avec le bouton pour lancer la mise à jour
-def page_maj_heures(request):
-    return render(request, 'gestions/maj_heures.html')
+def page_maj_heures(request, section):
+    return render(request, 'gestions/maj_heures.html', {'section': section})
 
-# Vue qui recalcul toutes les heures
+""" 
 def mettre_a_jour_heures(request):
     if request.method == "POST":
-        emplois = EmploiTemps.objects.all()
+        # Récupérer le niveau en cours depuis POST ou GET, ici on suppose POST
+        niveau_courant = request.POST.get("niveau")  # ex: "3"
+        if not niveau_courant:
+            messages.error(request, "Aucun niveau sélectionné.")
+            return redirect('page_maj_heures')
+        
+        try:
+            niveau_courant = int(niveau_courant)
+        except ValueError:
+            messages.error(request, "Niveau invalide.")
+            return redirect('page_maj_heures')
+
+        emplois = EmploiTemps.objects.filter(eleve__niveau=niveau_courant)
+        count = 0
 
         for emploi in emplois:
             calcul, created = CalculHeures.objects.get_or_create(emploitemps=emploi)
@@ -183,8 +196,41 @@ def mettre_a_jour_heures(request):
             calcul.heures_complementaires = max(0, calcul.heures_faites - duree)
             calcul.date_changement = date.today()
             calcul.save()
+            count += 1
 
-        messages.success(request, f"Heures mises à jour pour {emplois.count()} emploi(s).")
+        messages.success(request, f"Niveau {niveau_courant} : {count} emploi(s) mis à jour.")
+
+    return redirect('page_maj_heures')
+ """
+
+from django.shortcuts import redirect
+from django.contrib import messages
+from datetime import date
+from .models import EmploiTemps, CalculHeures
+
+def mettre_a_jour_heures(request):
+    if request.method == "POST":
+        # Exemple : récupérer le niveau automatiquement
+        # Ici on prend le niveau d'un "élève en cours" fictif ou défini par l'utilisateur connecté
+        # Remplace cette ligne par la logique exacte pour ton application
+        niveau_courant = request.user.eleve.niveau if hasattr(request.user, 'eleve') else 3  
+
+        emplois = EmploiTemps.objects.filter(eleve__niveau=niveau_courant)
+        count = 0
+
+        for emploi in emplois:
+            calcul, created = CalculHeures.objects.get_or_create(emploitemps=emploi)
+            duree = emploi.duree_heures
+
+            calcul.heures_dues = duree
+            calcul.heures_faites = duree if emploi.etat == "Effectué" else 0
+            calcul.heures_complementaires = max(0, calcul.heures_faites - duree)
+            calcul.date_changement = date.today()
+            calcul.save()
+            count += 1
+
+        messages.success(request, f"Niveau {niveau_courant} : {count} emploi(s) mis à jour.")
+
     return redirect('page_maj_heures')
 
 

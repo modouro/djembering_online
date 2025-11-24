@@ -348,11 +348,16 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a  href="{% url "page_maj_heures" %}" class="btn btn-primary btn-xs">
-                    <i class="bi bi-pencil-square"></i> 
-                </a> 
+                {% if section %}
+                    <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </a>
+                {% else %}
+                    <!-- Affiche un message ou cache le lien -->
+                    <span>Impossible de générer le lien : niveau manquant</span>
+                {% endif %}
             </div>
-            <div class="col-md-4 col-6 text-white bg-dark text-uppercase">
+            <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
                     Heures supplémentaires
                 </p>
@@ -449,11 +454,6 @@
             <p class="text-center">Aucune donnée disponible pour cette section.</p>
         {% endif %}
         <div class="row bg-light text-black text-center py-1 rounded">
-           {% comment %}  <div class="col-md-1 col-6">
-                <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                </div>
-            </div> {% endcomment %}
             <div class="col-md-1 col-6">
                 <p class="mb-0">
                     
@@ -470,21 +470,20 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a  href="" class="btn btn-primary btn-xs">
-                    <i class="bi bi-pencil-square"></i> 
-                </a>
+                {% if section %}
+                    <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-success btn-xs">
+                        <i class="bi bi-arrow-repeat"></i>
+                    </a>
+                {% else %}
+                    <!-- Affiche un message ou cache le lien -->
+                    <span>Impossible de générer le lien : niveau manquant</span>
+                {% endif %}
             </div>
-            <div class="col-md-4 col-6 text-white bg-dark text-uppercase">
+            <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
                     Heures supplémentaires
                 </p>
             </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            {% comment %} <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div> {% endcomment %}
         </div>
 
     </div>
@@ -588,7 +587,7 @@
                     <i class="bi bi-pencil-square"></i>
                 </a>
             </div>
-            <div class="col-md-4 col-6 text-white bg-dark text-uppercase">
+            <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
                     Heures supplémentaires
                 </p>
@@ -698,7 +697,7 @@
                     <i class="bi bi-pencil-square"></i> 
                 </a>
             </div>
-            <div class="col-md-4 col-6 text-white bg-dark text-uppercase">
+            <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
                     Heures supplémentaires
                 </p>

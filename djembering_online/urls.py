@@ -20,7 +20,7 @@ urlpatterns = [
     path('edit_heures/<int:id>/edit/', edit_calcul_heures, name='edit_heures'),
     
      # Route pour la page du template de mise à jour
-    path('heures/maj/', page_maj_heures, name='page_maj_heures'),
+    path('sections/<int:section>/', page_maj_heures, name='page_maj_heures'),
     # Route pour exécuter la mise à jour
     path('heures/maj/execute/', mettre_a_jour_heures, name='mettre_a_jour_heures'),
 
