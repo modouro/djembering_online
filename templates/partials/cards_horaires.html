@@ -300,25 +300,30 @@
                 <p class="mb-0"> {{ heure.emploitemps.eleve.niveau }} ème </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">A</p>
+                <p class="mb-0"> {{ heure.emploitemps.eleve.classe }} </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_dues }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">
-                    {% if heure.heures_faites < 0 %}
-                        0 h
-                    {% else %}
-                        {{ heure.heures_faites|add:"1" }} h
-                    {% endif %}
-                </p>
+                {% if heure.heures_faites < 0 %}
+                    0 h
+                {% else %}
+                    {{ heure.heures_faites }} h
+                {% endif %}
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">{{ heure.ratio }} %</p>
+                {% if heure.ratio %}
+                    {{ heure.ratio|floatformat:2 }} %
+                {% else %}
+                    0 %
+                {% endif %}
+                <div class="col-md-2 col-6">
+</div>
+
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -364,12 +369,7 @@
             </div>
         </div>
     </div>
-
-
 </div>
-
-
-
 
     <div id="section5" class="container py-1 {% if section == '5' %} d-block {% else %} d-none {% endif %}">
         {% if heures %}
@@ -420,7 +420,7 @@
                 </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">A</p>
+                <p class="mb-0">{{ heure.emploitemps.eleve.classe }} </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">{{ heure.heures_dues }} h</p>
@@ -438,9 +438,12 @@
                 <p class="mb-0">{{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">
-                     {{ heure.ratio }}%
-                </p>
+                {% if heure.ratio %}
+                    {{ heure.ratio|floatformat:1 }} %
+                {% else %}
+                    0 %
+                {% endif %}
+
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -471,7 +474,7 @@
             </div>
             <div class="col-md-1 col-6">
                 {% if section %}
-                    <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-success btn-xs">
+                    <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
                         <i class="bi bi-arrow-repeat"></i>
                     </a>
                 {% else %}
@@ -535,7 +538,7 @@
                 <p class="mb-0"> {{ heure.emploitemps.eleve.niveau }} ème </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">A</p>
+                <p class="mb-0"> {{ heure.emploitemps.eleve.classe }} </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_dues }} h</p>
@@ -553,7 +556,11 @@
                 <p class="mb-0"> {{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">{{ heure.ratio }} %</p>
+                {% if heure.ratio %}
+                    {{ heure.ratio|floatformat:1 }} %
+                {% else %}
+                    0 %
+                {% endif %}
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -583,8 +590,8 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a href="" class="btn btn-primary btn-xs">
-                    <i class="bi bi-pencil-square"></i>
+                <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
+                    <i class="bi bi-arrow-repeat"></i>
                 </a>
             </div>
             <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
@@ -662,7 +669,11 @@
                 <p class="mb-0"> {{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">{{ heure.ratio }} %</p>
+                {% if heure.ratio %}
+                    {{ heure.ratio|floatformat:1 }} %
+                {% else %}
+                    0 %
+                {% endif %}
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -693,8 +704,8 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a  href="" class="btn btn-primary btn-xs">
-                    <i class="bi bi-pencil-square"></i> 
+                <a  href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
+                    <i class="bi bi-arrow-repeat"></i> 
                 </a>
             </div>
             <div class="col-md-5 col-6 text-white bg-dark text-uppercase">

@@ -2,10 +2,10 @@
     <!-- Navigation des pages -->
 
     <ul class="nav nav-tabs">
-        {% for i in sectors %}
+        {% for i in sections %}
         <li class="nav-item">
-             <a href="{% url 'gestion_emploi' sector=i day=selected_day %}" 
-               class="nav-link {% if sector == i %}bg-white text-primary{% else %}bg-success text-white{% endif %}">
+             <a href="{% url 'gestion_emploi' section=i day=selected_day %}" 
+               class="nav-link {% if section == i %}bg-white text-primary{% else %}bg-success text-white{% endif %}">
                 Classe {{ i }} °
             </a> 
         </li>
@@ -18,7 +18,7 @@
  <!-- Boutons pour les jours de la semaine -->
 <div class="d-flex justify-content-center gap-2 my-3">
     {% for jour in jours %}
-    <a href="{% url 'gestion_emploi' sector=sector day=jour %}" 
+    <a href="{% url 'gestion_emploi' section=section day=jour %}" 
         class="btn btn-outline-primary {% if selected_day == jour %}active{% endif %}">
         {{ jour }}
     </a>
@@ -26,7 +26,7 @@
 </div>
 
 <div class="container py-1">
-    <h4 class="text-center text-primary">Classe {{ sector }} – {{ selected_day }}</h4>
+    <h4 class="text-center text-primary">Classe {{ section }} – {{ selected_day }}</h4>
     {% if emplois %}
         <div class="row">
             {% for emploi in emplois %}
@@ -47,7 +47,7 @@
             {% endfor %}
         </div>
     {% else %}
-        <p class="text-center text-muted">Aucun emploi du temps disponible pour la classe {{ sector }} le {{ selected_day }}.</p>
+        <p class="text-center text-muted">Aucun emploi du temps disponible pour la classe {{ section }} le {{ selected_day }}.</p>
     {% endif %}
 </div>
 

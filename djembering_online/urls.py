@@ -33,8 +33,8 @@ urlpatterns = [
     path('add_eleves', add_eleves_view, name="add_eleves"),
     path('update_eleve/<int:eleve_id>/', update_eleve_view, name='update_eleve'),
 
-    path('gestion_emploi/<str:sector>/<str:day>/', gestions_emploi_view, name='gestion_emploi'),
-    path('gestion_emploi/<str:sector>/', gestions_emploi_view, name='gestion_emploi'),
+    path('gestion_emploi/<str:section>/<str:day>/', gestions_emploi_view, name='gestion_emploi'),
+    path('gestion_emploi/<str:section>/', gestions_emploi_view, name='gestion_emploi'),
     path('gestion_emploi/', gestions_emploi_view, name='gestion_emploi'),
     path('add_emploi/', add_emploi_view, name="add_emploi"),
     path('update_emploi/<int:emploi_id>/', update_emploi, name='update_emploi'),

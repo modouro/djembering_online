@@ -1,4 +1,4 @@
-from datetime import  datetime
+from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
 from django.db.models import Sum, F, FloatField, ExpressionWrapper
 from django.shortcuts import render, redirect, get_object_or_404
@@ -6,13 +6,11 @@ from django.contrib.auth import login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
 from django.core.paginator import Paginator, PageNotAnInteger, EmptyPage
 from django.urls import reverse
-from datetime import datetime, timedelta
 from django.utils.http import urlencode
 from django.views.decorators.http import require_POST
-from datetime import date
 from django.utils.timezone import now
 from django.contrib import messages
-from django.db.models import F, Sum
+from django.db.models.functions import NullIf
 from .models import Absence, Administrateur, CalculHeures, EmploiTemps, Eleves, Professeur, CongeEmploye
 from django.contrib.auth.hashers import make_password
 from .forms import  LoginForm, ElevesForm
@@ -89,13 +87,14 @@ def get_heures_par_section(section):
         )
         .annotate(
             ratio=ExpressionWrapper(
-                (F("heures_faites") * 100.0) / F("heures_dues"),
+                (F("heures_faites") * 100.0) / NullIf(F("heures_dues"), 0),
                 output_field=FloatField()
             )
         )
         .order_by("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
     )
     return section, heures
+
 # Vue pour /gestion_here/ ou /gestion_heure/?section=3 ou /gestion/heure/3/
 
 def gestion_heures_view(request, section=None):
@@ -105,8 +104,9 @@ def gestion_heures_view(request, section=None):
 
     return render(request, "gestions/gestion_heure.html", {
         "section": section,
-        "heures": heures
+        "heures": heures,
     })
+
 # Vue pour /sections/3/ (ou n’importe quel niveau)
 def sections_view(request, section=None):
     if section is None:
@@ -118,6 +118,26 @@ def sections_view(request, section=None):
         "section": section,
         "heures": heures
     })
+
+""" 
+def sections_view(request, section=None):
+    if section is None:
+        return redirect("/gestion_heure/0/")  
+
+    section, heures = get_heures_par_section(section)
+
+    # Calcul du ratio pour chaque heure
+    for h in heures:
+        if h.heures_dues and h.heures_dues != 0:
+            h.ratio = round((h.heures_faites / h.heures_dues) * 100, 2)
+        else:
+            h.ratio = 0  # évite la division par zéro
+
+    return render(request, "gestions/gestion_heure.html", {
+        "section": section,
+        "heures": heures
+    })
+ """
 
 def ajouter_calcul_heures(request):
     # On récupère la section depuis l'URL
@@ -168,45 +188,6 @@ def ajouter_calcul_heures(request):
 # Page avec le bouton pour lancer la mise à jour
 def page_maj_heures(request, section):
     return render(request, 'gestions/maj_heures.html', {'section': section})
-
-""" 
-def mettre_a_jour_heures(request):
-    if request.method == "POST":
-        # Récupérer le niveau en cours depuis POST ou GET, ici on suppose POST
-        niveau_courant = request.POST.get("niveau")  # ex: "3"
-        if not niveau_courant:
-            messages.error(request, "Aucun niveau sélectionné.")
-            return redirect('page_maj_heures')
-        
-        try:
-            niveau_courant = int(niveau_courant)
-        except ValueError:
-            messages.error(request, "Niveau invalide.")
-            return redirect('page_maj_heures')
-
-        emplois = EmploiTemps.objects.filter(eleve__niveau=niveau_courant)
-        count = 0
-
-        for emploi in emplois:
-            calcul, created = CalculHeures.objects.get_or_create(emploitemps=emploi)
-            duree = emploi.duree_heures
-
-            calcul.heures_dues = duree
-            calcul.heures_faites = duree if emploi.etat == "Effectué" else 0
-            calcul.heures_complementaires = max(0, calcul.heures_faites - duree)
-            calcul.date_changement = date.today()
-            calcul.save()
-            count += 1
-
-        messages.success(request, f"Niveau {niveau_courant} : {count} emploi(s) mis à jour.")
-
-    return redirect('page_maj_heures')
- """
-
-from django.shortcuts import redirect
-from django.contrib import messages
-from datetime import date
-from .models import EmploiTemps, CalculHeures
 
 def mettre_a_jour_heures(request):
     if request.method == "POST":
@@ -260,19 +241,21 @@ def edit_calcul_heures(request, calcul_id):
         'calcul': calcul
     })
 # ------------------------------------------- debut gestion emploi et fin edit calcul heures -----------------------------------
-def gestions_emploi_view(request, sector=None, day=None):
+
+def gestions_emploi_view(request, section=None, day=None):
     # Liste des secteurs et jours possibles
-    sectors = ["6", "5", "4", "3"]
-    jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"]
+    sections = ["6", "5", "4", "3"]
+    jours = ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi"]
 
     # Récupération via GET si présent
-    sector_get = request.GET.get("sector")
+    sector_get = request.GET.get("section")
     day_get = request.GET.get("day")
 
-    if sector_get in sectors:
-        sector = sector_get
-    elif sector not in sectors:
-        sector = "6"  # secteur par défaut
+    # Gestion de la section (par défaut = "6")
+    if sector_get in sections:
+        section = sector_get
+    elif section not in sections:
+        section = "6"
 
     if day_get in jours:
         day = day_get
@@ -285,23 +268,50 @@ def gestions_emploi_view(request, sector=None, day=None):
             "Thursday": "Jeudi", "Friday": "Vendredi", "Saturday": "Samedi"
         }
         day = mapping_jours.get(day, "Lundi")  # fallback sur Lundi
+        
 
     # Filtrer les emplois
-    emplois = EmploiTemps.objects.filter(eleve__niveau=sector, jour=day)
+    # emplois = EmploiTemps.objects.filter(eleve__niveau=section, jour=day)
+    emplois = EmploiTemps.objects.filter(eleve__niveau=section, jour=day).select_related("professeur", "eleve")
+
+    # Pour chaque emploi, récupérer ses heures et calculer le ratio sécurisé
+    heures = []
+    for emploi in emplois:
+        try:
+            calc = CalculHeures.objects.get(emploitemps=emploi)
+        except CalculHeures.DoesNotExist:
+            # Si aucune entrée, on met tout à zéro
+            calc = CalculHeures(emploitemps=emploi, heures_dues=0, heures_faites=0, heures_complementaires=0)
+
+        # Calcul ratio sécurisé
+        if calc.heures_dues == 0:
+            ratio = 0
+        else:
+            ratio = round((calc.heures_faites / calc.heures_dues) * 100, 2)
+
+        # Ajouter au dictionnaire pour le template
+        heures.append({
+            "emploitemps": emploi,
+            "heures_dues": calc.heures_dues,
+            "heures_faites": calc.heures_faites,
+            "heures_complementaires": calc.heures_complementaires,
+            "ratio": ratio,
+        })
 
     # Contexte pour le template
     context = {
         "emplois": emplois,
-        "sector": sector,            # secteur actuellement sélectionné
-        "sectors": sectors,          # liste de tous les secteurs
+        "heures": heures,            # liste des heures avec ratio calculé
+        "section": section,            # secteur actuellement sélectionné
+        "sections": sections,          # liste de tous les secteurs
         "jours": jours,              # liste de tous les jours
         "selected_day": day,         # jour actuellement sélectionné
     }
 
     # Fusion avec tes totaux existants
-    total_context = get_totals_context()
+    total_context = get_totals_context() or {}
     context.update(total_context)
-    
+
     return render(request, 'gestions/gestions_emploi.html', context)
 
 

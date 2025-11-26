@@ -1,18 +1,5 @@
 <div class="container-fluid">
     <!-- En-tête -->
-    <div class="row py-2">
-        <div class="col-12">
-            <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded">
-                <h5 class="text-white mx-2">Liste des élèves</h5>
-                <!-- Lien pour ouvrir le modal -->
-                <a href="#" data-bs-toggle="modal" data-bs-target="#addEleveModal">
-                    <i class="bi bi-plus-circle-fill bg-white text-dark rounded-circle" style="font-size: 1.5rem;"></i>
-                </a>
-            </div>
-        </div>
-    </div>
-
-
 <div class="row py-2">
     <div class="col-12">
         <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded px-2">
@@ -24,9 +11,11 @@
                 <select name="niveau" class="form-select form-select-sm me-2" style="width: auto;" onchange="this.form.submit()">
                     <option value="">Tous les niveaux</option>
                     {% for n in niveaux %}
-                        <option value="{{ n }}" {% if request.GET.niveau == n %}selected{% endif %}>{{ n }}</option>
+                        <option value="{{ n.0 }}" {% if request.GET.niveau == n.0|stringformat:"s" %}selected{% endif %}>{{ n.1 }}</option>
                     {% endfor %}
                 </select>
+
+
             </form>
 
             <!-- Bouton + pour le modal -->
@@ -36,9 +25,6 @@
         </div>
     </div>
 </div>
-
-
-
     <!-- Modal -->
     <div class="modal fade" id="addEleveModal" tabindex="-1" aria-labelledby="addEleveModalLabel" aria-hidden="true">
         <div class="modal-dialog">
