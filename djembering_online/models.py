@@ -93,9 +93,14 @@ class Professeur(models.Model):
     sexe = models.CharField(max_length=1, choices=SEX_CHOICES, verbose_name=_("Sexe"), db_index=True)
     fonction = models.CharField(max_length=100, verbose_name=_("Fonction"))
     telephone = models.CharField(max_length=10, verbose_name=_("Téléphone"))
+    heure_matiere = models.IntegerField(
+    default=0,
+    verbose_name=_("Heures de matière"),
+    validators=[MinValueValidator(0)]
+    )
 
     def __str__(self):
-        return f"{self.prenom} {self.nom} - {self.fonction}"
+        return f"{self.prenom} {self.nom} - {self.fonction} {self.heure_matiere} h"
 
     def clean(self):
         if not self.telephone.isdigit() or len(self.telephone) != 10:

@@ -106,13 +106,14 @@ class ElevesForm(forms.ModelForm):
 class ProfesseurForm(forms.ModelForm):
     class Meta:
         model = Professeur
-        fields = ['prenom', 'nom', 'sexe', 'fonction', 'telephone']
+        fields = ['prenom', 'nom', 'sexe', 'fonction', 'telephone', 'heure_matiere']
         widgets = {
             'prenom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Prénom'}),
             'nom': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Nom'}),
             'sexe': forms.Select(attrs={'class': 'form-control'}),
             'fonction': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Fonction'}),
             'telephone': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Téléphone'}),
+            'heure_matiere': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'heure_matiere'}),
         }
         labels = {
             'prenom': 'Prénom',
@@ -120,4 +121,5 @@ class ProfesseurForm(forms.ModelForm):
             'sexe': 'Sexe',
             'fonction': 'Fonction',
             'telephone': 'Téléphone',
+            'heure_matiere': 'heure_matiere',
         }
