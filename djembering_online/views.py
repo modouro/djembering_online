@@ -59,8 +59,7 @@ def admin_view(request):
     return render(request, 'gestions/admin.html', context)
 
 def get_totals_context():
-    return
-    {
+    return{
         "total_eleves": Eleves.objects.count(),
         "total_professeurs": Professeur.objects.count(),
         }
@@ -119,25 +118,7 @@ def sections_view(request, section=None):
         "heures": heures
     })
 
-""" 
-def sections_view(request, section=None):
-    if section is None:
-        return redirect("/gestion_heure/0/")  
 
-    section, heures = get_heures_par_section(section)
-
-    # Calcul du ratio pour chaque heure
-    for h in heures:
-        if h.heures_dues and h.heures_dues != 0:
-            h.ratio = round((h.heures_faites / h.heures_dues) * 100, 2)
-        else:
-            h.ratio = 0  # évite la division par zéro
-
-    return render(request, "gestions/gestion_heure.html", {
-        "section": section,
-        "heures": heures
-    })
- """
 
 def ajouter_calcul_heures(request):
     # On récupère la section depuis l'URL
@@ -579,9 +560,10 @@ def add_professeur_view(request):
         sexe = request.POST.get('sexe')
         fonction = request.POST.get('fonction')
         telephone = request.POST.get('telephone')
+        heure_matiere = request.POST.get('heure_matiere')
 
         # Validation basique
-        if not (prenom and nom and sexe and fonction and telephone):
+        if not (prenom and nom and sexe and fonction and telephone and heure_matiere):
             messages.error(request, "Veuillez remplir tous les champs.")
             return redirect('gestion_classe')  # Remplacez par l'URL de votre page
 
@@ -591,7 +573,8 @@ def add_professeur_view(request):
             nom=nom,
             sexe=sexe,
             fonction=fonction,
-            telephone=telephone
+            telephone=telephone,
+            heure_matiere=heure_matiere
         )
         messages.success(request, "Professeur ajouté avec succès !")
         return redirect('gestion_classe')  # Remplacez par l'URL de votre page
@@ -608,9 +591,10 @@ def update_professeur_view(request, professeur_id):
         sexe = request.POST.get('sexe')
         fonction = request.POST.get('fonction')
         telephone = request.POST.get('telephone')
+        heure_matiere = request.POST.get('heure_matiere')
 
         # Validation basique
-        if not (prenom and nom and sexe and fonction and telephone):
+        if not (prenom and nom and sexe and fonction and telephone and heure_matiere):
             messages.error(request, "Veuillez remplir tous les champs.")
             return redirect('edit_professeur', professeur_id=professeur_id)
 
@@ -620,6 +604,7 @@ def update_professeur_view(request, professeur_id):
         professeur.sexe = sexe
         professeur.fonction = fonction
         professeur.telephone = telephone
+        professeur.heure_matiere = heure_matiere
         professeur.save()
 
         messages.success(request, "Professeur modifié avec succès !")

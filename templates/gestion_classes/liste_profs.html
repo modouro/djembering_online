@@ -53,6 +53,9 @@
                             <div class="mb-3">
                                 <input type="text" class="form-control" name="telephone" placeholder="Entrer votre téléphone" required>
                             </div>
+                            <div class="mb-3">
+                                <input type="number" class="form-control" name="heure_matiere" placeholder="Entrer heure matière" min="0" step="1" required>
+                            </div>
                             <button type="submit" class="btn btn-primary w-100">S'inscrire</button>
                         </fieldset>
                     </form>
@@ -65,17 +68,20 @@
     {% for professeur in professeur_page_obj %}
     <div class="row text-black text-center align-items-center py-1 rounded">
         <!-- Avatar -->
-        <div class="col-2 col-md-1 text-center">
+        <div class="col-2 col-md-1 d-flex justify-content-center">
             <div class="rounded-circle border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
                 <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
             </div>
         </div>
         <!-- Détails Professeur --> 
-        <div class="col-6 col-md-5">
-            <p class="mb-0 text-start">{{ professeur.prenom }} - {{ professeur.nom }}</p>
+        <div class="col-10 col-md-4 text-start">
+            <p class="mb-0">{{ professeur.prenom }} - {{ professeur.nom }}</p>
         </div>
-        <div class="col-4 col-md-4">
-            <p class="mb-0 text-start">{{ professeur.fonction }}</p>
+        <div class="col-6 col-md-3 text-start">
+            <p class="mb-0">{{ professeur.fonction }}</p>
+        </div>
+        <div class="col-6 col-md-2 text-start">
+            <p class="mb-0">{{ professeur.heure_matiere }} h</p>
         </div>
         <div class="col-12 col-md-2 text-end">
             <a href="{% url 'update_professeur' professeur.id %}" class="">
