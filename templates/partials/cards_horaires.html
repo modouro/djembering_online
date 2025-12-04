@@ -348,7 +348,7 @@
                 </p>
             </div>
             <div class="col-md-1 col-6">
-                <a href="{% url "add_heure" %}?section={{ section }}" class="btn btn-success btn-xs">
+                <a href="{% comment %} {% url "add_heure" %}?section={{ section }} {% endcomment %}" class="btn btn-success btn-xs">
                     <i class="bi bi-plus"></i> 
                 </a>
             </div>
@@ -468,7 +468,7 @@
                 </p>
             </div>
             <div class="col-md-1 col-6">
-                <a href="{% url "add_heure" %}?section={{ section }}" class="btn btn-success btn-xs">
+                <a href="{% comment %} {% url "add_heure" %}?section={{ section }} {% endcomment %}" class="btn btn-success btn-xs">
                     <i class="bi bi-plus"></i> 
                 </a>
             </div>
@@ -585,7 +585,7 @@
                 </p>
             </div>
             <div class="col-md-1 col-6">
-                <a href="{% url "add_heure" %}?section={{ section }}" class="btn btn-success btn-xs">
+                <a href="{% comment %} {% url "add_heure" %}?section={{ section }} {% endcomment %}" class="btn btn-success btn-xs">
                     <i class="bi bi-plus"></i> 
                 </a>
             </div>
@@ -599,12 +599,6 @@
                     Heures supplémentaires
                 </p>
             </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            {% comment %} <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div> {% endcomment %}
         </div>
     </div>
 
@@ -699,7 +693,7 @@
                 </p>
             </div>
             <div class="col-md-1 col-6">
-                <a href="{% url "add_heure" %}?section={{ section }}" class="btn btn-success btn-xs">
+                <a href="{% comment %} {% url "add_heure" %}?section={{ section }} {% endcomment %}" class="btn btn-success btn-xs">
                     <i class="bi bi-plus"></i> 
                 </a>
             </div>

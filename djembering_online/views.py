@@ -118,8 +118,8 @@ def sections_view(request, section=None):
         "heures": heures
     })
 
-
-
+# tu peux utiliser ce template pour ajouter les heures supplementaires ou modifier heure suppl
+# comment ajouter les l'heures dues dans la table
 def ajouter_calcul_heures(request):
     # On récupère la section depuis l'URL
     section = request.GET.get("section")
@@ -166,7 +166,9 @@ def ajouter_calcul_heures(request):
         'section': section
     })
 
+
 # Page avec le bouton pour lancer la mise à jour
+
 def page_maj_heures(request, section):
     return render(request, 'gestions/maj_heures.html', {'section': section})
 
