@@ -146,8 +146,20 @@ class EmploiTemps(models.Model):
         return (fin - debut).seconds / 3600
 
     def save(self, *args, **kwargs):
-        # Vérifier si l'objet existe déjà (donc mise à jour)
-        if self.pk:
+        # Vérifier si c'est une création
+        is_new = self.pk is None
+        
+        super().save(*args, **kwargs)
+
+        if is_new:
+            CalculHeures.objects.create(
+                emploitemps=self,
+                heures_dues=self.professeur.heure_matiere,
+                heures_faites=0,
+                heures_complementaires=0,
+            )
+        # Si c'est une mise à jour → gérer tes mises à jour de l'état comme avant
+        else:
             ancien = EmploiTemps.objects.get(pk=self.pk)
             etat_avant = ancien.etat
             etat_apres = self.etat
@@ -159,16 +171,17 @@ class EmploiTemps(models.Model):
 
                     if etat_avant == 'Non effectué' and etat_apres == 'Effectué':
                         calcul.heures_faites += duree
-                        calcul.save()
                     elif etat_avant == 'Effectué' and etat_apres == 'Non effectué':
                         calcul.heures_faites -= duree
-                        if calcul.heures_faites < 0:
-                            calcul.heures_faites = 0
-                        calcul.save()
+                        calcul.heures_faites = max(calcul.heures_faites, 0)
+
+                    calcul.save()
+
                 except CalculHeures.DoesNotExist:
-                    pass  # Aucun calcul encore associé, on ne fait rien
+                    pass
 
         super().save(*args, **kwargs)
+
 
 class Absence(models.Model):
     eleve = models.ForeignKey(Eleves, on_delete=models.CASCADE, related_name="absences") 
