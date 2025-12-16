@@ -145,42 +145,7 @@ class EmploiTemps(models.Model):
         fin = datetime.combine(datetime.today(), self.heure_fin)
         return (fin - debut).seconds / 3600
 
-    def save(self, *args, **kwargs):
-        # Vérifier si c'est une création
-        is_new = self.pk is None
-        
-        super().save(*args, **kwargs)
 
-        if is_new:
-            CalculHeures.objects.create(
-                emploitemps=self,
-                heures_dues=self.professeur.heure_matiere,
-                heures_faites=0,
-                heures_complementaires=0,
-            )
-        # Si c'est une mise à jour → gérer tes mises à jour de l'état comme avant
-        else:
-            ancien = EmploiTemps.objects.get(pk=self.pk)
-            etat_avant = ancien.etat
-            etat_apres = self.etat
-
-            if etat_avant != etat_apres:
-                try:
-                    calcul = CalculHeures.objects.get(emploitemps=self)
-                    duree = self.duree_heures
-
-                    if etat_avant == 'Non effectué' and etat_apres == 'Effectué':
-                        calcul.heures_faites += duree
-                    elif etat_avant == 'Effectué' and etat_apres == 'Non effectué':
-                        calcul.heures_faites -= duree
-                        calcul.heures_faites = max(calcul.heures_faites, 0)
-
-                    calcul.save()
-
-                except CalculHeures.DoesNotExist:
-                    pass
-
-        super().save(*args, **kwargs)
 
 
 class Absence(models.Model):
