@@ -145,9 +145,6 @@ class EmploiTemps(models.Model):
         fin = datetime.combine(datetime.today(), self.heure_fin)
         return (fin - debut).seconds / 3600
 
-
-
-
 class Absence(models.Model):
     eleve = models.ForeignKey(Eleves, on_delete=models.CASCADE, related_name="absences") 
     professeur = models.ForeignKey(Professeur, on_delete=models.CASCADE, related_name="professeur", default=1)

@@ -1,6 +1,6 @@
 from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
-from django.db.models import Sum, F, FloatField, ExpressionWrapper
+from django.db.models import Sum, F, FloatField, Case, When, Value
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
@@ -10,7 +10,6 @@ from django.utils.http import urlencode
 from django.views.decorators.http import require_POST
 from django.utils.timezone import now
 from django.contrib import messages
-from django.db.models.functions import NullIf
 from .models import Absence, Administrateur, CalculHeures, EmploiTemps, Eleves, Professeur, CongeEmploye
 from django.contrib.auth.hashers import make_password
 from .forms import  LoginForm, ElevesForm
@@ -64,7 +63,7 @@ def get_totals_context():
         "total_professeurs": Professeur.objects.count(),
         }
 
-def get_heures_par_section(section):
+""" def get_heures_par_section(section):
     try:section_int = int(section)
     except (ValueError, TypeError):
         section_int = None
@@ -72,7 +71,64 @@ def get_heures_par_section(section):
     heures_qs = CalculHeures.objects.select_related(
         "emploitemps", "emploitemps__eleve"
         )
+    
+    # Filtrer par niveau si section valide
+    if section_int:
+        heures_qs = heures_qs.filter(emploitemps__eleve__niveau=section_int)
     # Si la section est bien un chfifre valide, on filtre
+
+    # 1️⃣ Agrégation par niveau + classe
+    heures = (
+        heures_qs.values("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
+        .annotate(
+            heures_dues=Sum("heures_dues"),
+            heures_faites=Sum("heures_faites"),
+            heures_complementaires=Sum("heures_complementaires"),
+        )
+        .annotate(
+                ratio=Case(
+                When(heures_dues=0, then=Value(0.0)),
+                default=F("heures_faites") * 100.0 / F("heures_dues"),
+                output_field=FloatField()
+            )
+        )
+
+        .order_by("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
+    )
+
+    # 2️⃣ Totaux par niveau (toutes classes confondues)
+    totaux_par_niveau = (
+        heures_qs.values("emploitemps__eleve__niveau")
+        .annotate(
+            heures_dues=Sum("heures_dues"),
+            heures_faites=Sum("heures_faites"),
+            heures_complementaires=Sum("heures_complementaires"),
+        )
+        .annotate(
+            ratio=Case(
+                When(heures_dues=0, then=Value(0.0)),
+                default=F("heures_faites") * 100.0 / F("heures_dues"),
+                output_field=FloatField()
+            )
+        )
+        .order_by("emploitemps__eleve__niveau")
+    )
+    
+    return section, heures
+ """
+
+
+def get_heures_par_section(section):
+    try:
+        section_int = int(section)
+    except (ValueError, TypeError):
+        section_int = None
+
+    # Base queryset
+    heures_qs = CalculHeures.objects.select_related(
+        "emploitemps", "emploitemps__eleve"
+    )
+
     if section_int:
         heures_qs = heures_qs.filter(emploitemps__eleve__niveau=section_int)
 
@@ -85,14 +141,27 @@ def get_heures_par_section(section):
             heures_complementaires=Sum("heures_complementaires"),
         )
         .annotate(
-            ratio=ExpressionWrapper(
-                (F("heures_faites") * 100.0) / NullIf(F("heures_dues"), 0),
+            ratio=Case(
+                When(heures_dues=0, then=Value(0.0)),
+                default=F("heures_faites") * 100.0 / F("heures_dues"),
                 output_field=FloatField()
             )
         )
         .order_by("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
     )
-    return section, heures
+
+    # Totaux par niveau
+    totaux_niveau = (
+        heures_qs.values("emploitemps__eleve__niveau")
+        .annotate(
+            total_heures_dues=Sum("heures_dues"),
+            total_heures_faites=Sum("heures_faites"),
+            total_heures_complementaires=Sum("heures_complementaires"),
+        )
+        .order_by("emploitemps__eleve__niveau")
+    )
+
+    return section, heures, totaux_niveau
 
 # Vue pour /gestion_here/ ou /gestion_heure/?section=3 ou /gestion/heure/3/
 
@@ -111,11 +180,12 @@ def sections_view(request, section=None):
     if section is None:
         return redirect("/gestion_heure/0/")
 
-    section, heures = get_heures_par_section(section)
+    section, heures, totaux_niveau = get_heures_par_section(section)
 
     return render(request, "gestions/gestion_heure.html", {
         "section": section,
-        "heures": heures
+        "heures": heures,
+        "totaux_niveau": totaux_niveau,
     })
 
 # tu peux utiliser ce template pour ajouter les heures supplementaires ou modifier heure suppl

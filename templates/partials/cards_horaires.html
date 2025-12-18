@@ -73,6 +73,8 @@
         </div>
 
         <!-- Données -->
+         {% for total in totaux_niveau%}
+         {% if total.emploitemps__eleve__niveau == 6 %}
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
@@ -80,17 +82,18 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">6 ème</p>
+                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">40h</p>
+                <p class="mb-0">{{ total.total_heures_dues }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">35h</p>
+                <p class="mb-0">{{ total.total_heures_faites}}</p>
             </div>
             <div class="col-md-3 col-6">
-                <p class="mb-0">5h</p>
+                <p class="mb-0">{{ total.total_heures_complementaires }} h</p>
             </div>
+
             <div class="col-md-2 col-6">
                 <p class="mb-0">87.5%</p>
             </div>
@@ -101,6 +104,7 @@
                 <hr class="border border-dark border-1 justify-content-end">
             </div>
         </div>
+        {% endif %}     
 
         <!-- Données supplémentaires -->
         <div class="row bg-light text-black text-center py-1 rounded">
@@ -110,7 +114,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">5 ème</p>
+                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">45h</p>
@@ -140,7 +144,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">4 ème</p>
+                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">50h</p>
@@ -170,7 +174,7 @@
                 </div>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">3 ème</p>
+                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">50h</p>
@@ -251,6 +255,8 @@
                 <hr class="border border-dark border-1 justify-content-end">
             </div>
         </div>
+
+        {% endfor %}
 
     </div>
 
