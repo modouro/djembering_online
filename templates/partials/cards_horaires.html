@@ -73,8 +73,9 @@
         </div>
 
         <!-- Données -->
-         {% for total in totaux_niveau%}
-         {% if total.emploitemps__eleve__niveau == 6 %}
+        {% for total in totaux_niveau %}
+            {% if total.emploitemps__eleve__niveau == 3 %}
+         
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
@@ -103,9 +104,12 @@
             <div class="col-md-11">
                 <hr class="border border-dark border-1 justify-content-end">
             </div>
-        </div>
-        {% endif %}     
-
+        </div> 
+          {% endif %}
+        {% empty %}
+            <p class="text-center">Aucune donnée disponible</p>
+        {% endfor %} 
+        
         <!-- Données supplémentaires -->
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
@@ -255,8 +259,6 @@
                 <hr class="border border-dark border-1 justify-content-end">
             </div>
         </div>
-
-        {% endfor %}
 
     </div>
 

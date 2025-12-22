@@ -63,60 +63,6 @@ def get_totals_context():
         "total_professeurs": Professeur.objects.count(),
         }
 
-""" def get_heures_par_section(section):
-    try:section_int = int(section)
-    except (ValueError, TypeError):
-        section_int = None
-        # Base queryset 
-    heures_qs = CalculHeures.objects.select_related(
-        "emploitemps", "emploitemps__eleve"
-        )
-    
-    # Filtrer par niveau si section valide
-    if section_int:
-        heures_qs = heures_qs.filter(emploitemps__eleve__niveau=section_int)
-    # Si la section est bien un chfifre valide, on filtre
-
-    # 1️⃣ Agrégation par niveau + classe
-    heures = (
-        heures_qs.values("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
-        .annotate(
-            heures_dues=Sum("heures_dues"),
-            heures_faites=Sum("heures_faites"),
-            heures_complementaires=Sum("heures_complementaires"),
-        )
-        .annotate(
-                ratio=Case(
-                When(heures_dues=0, then=Value(0.0)),
-                default=F("heures_faites") * 100.0 / F("heures_dues"),
-                output_field=FloatField()
-            )
-        )
-
-        .order_by("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
-    )
-
-    # 2️⃣ Totaux par niveau (toutes classes confondues)
-    totaux_par_niveau = (
-        heures_qs.values("emploitemps__eleve__niveau")
-        .annotate(
-            heures_dues=Sum("heures_dues"),
-            heures_faites=Sum("heures_faites"),
-            heures_complementaires=Sum("heures_complementaires"),
-        )
-        .annotate(
-            ratio=Case(
-                When(heures_dues=0, then=Value(0.0)),
-                default=F("heures_faites") * 100.0 / F("heures_dues"),
-                output_field=FloatField()
-            )
-        )
-        .order_by("emploitemps__eleve__niveau")
-    )
-    
-    return section, heures
- """
-
 
 def get_heures_par_section(section):
     try:
@@ -129,7 +75,7 @@ def get_heures_par_section(section):
         "emploitemps", "emploitemps__eleve"
     )
 
-    if section_int:
+    if section_int is not None:
         heures_qs = heures_qs.filter(emploitemps__eleve__niveau=section_int)
 
     # Agrégation par niveau + classe
@@ -163,19 +109,18 @@ def get_heures_par_section(section):
 
     return section, heures, totaux_niveau
 
-# Vue pour /gestion_here/ ou /gestion_heure/?section=3 ou /gestion/heure/3/
-
 def gestion_heures_view(request, section=None):
     if section is None:
         section = request.GET.get("section", "0")
-    section, heures = get_heures_par_section(section)
+    section, heures, totaux_niveau = get_heures_par_section(section)
 
     return render(request, "gestions/gestion_heure.html", {
         "section": section,
         "heures": heures,
+        "totaux_niveau": totaux_niveau,
     })
 
-# Vue pour /sections/3/ (ou n’importe quel niveau)
+
 def sections_view(request, section=None):
     if section is None:
         return redirect("/gestion_heure/0/")
