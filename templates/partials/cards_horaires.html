@@ -74,7 +74,7 @@
 
         <!-- Données -->
         {% for total in totaux_niveau %}
-            {% if total.emploitemps__eleve__niveau == 3 %}
+            
          
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
@@ -105,7 +105,7 @@
                 <hr class="border border-dark border-1 justify-content-end">
             </div>
         </div> 
-          {% endif %}
+          
         {% empty %}
             <p class="text-center">Aucune donnée disponible</p>
         {% endfor %} 
@@ -263,7 +263,6 @@
     </div>
 
     <div id="section6" class="container py-1 {% if section == '6' %} d-block {% else %} d-none {% endif %}">
-        {% if heures %}
         <div class="row bg-white text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
 
@@ -305,7 +304,7 @@
                 </div>
             </div>
             <div class="col-md-1 col-6">
-                <p class="mb-0"> {{ heure.emploitemps.eleve.niveau }} ème </p>
+                <p class="mb-0"> {{ heure.emploitemps__eleve__niveau }} ème </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.emploitemps.eleve.classe }} </p>
@@ -341,9 +340,7 @@
             </div>
         </div>
          {% endfor %}
-        {% else %}
-            <p class="text-center">Aucune donnée disponible pour cette section.</p>
-        {% endif %}
+       
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <p class="mb-0">
@@ -376,11 +373,12 @@
                 </p>
             </div>
         </div>
+        {% comment %} Le code pour le modals {% endcomment %}
+
+        {% comment %} Le code pour le modals {% endcomment %}
     </div>
     
-
     <div id="section5" class="container py-1 {% if section == '5' %} d-block {% else %} d-none {% endif %}">
-        {% if heures %}
         <div class="row bg-white text-black text-center py-1 rounded">
             <!-- Contenu de la section 0 -->
             <div class="col-md-1 col-6">
@@ -423,12 +421,12 @@
                 </div>
             </div>
             <div class="col-md-1 col-6">
-                <p class="mb-0">{{ heure.emploitemps.eleve.niveau }} ème
+                <p class="mb-0">{{ heure.emploitemps__eleve__niveau }} ème
 
                 </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">{{ heure.emploitemps.eleve.classe }} </p>
+                <p class="mb-0">{{ heure.emploitemps__eleve__classe }} </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">{{ heure.heures_dues }} h</p>
@@ -461,13 +459,10 @@
             </div>
         </div>
         {% endfor %}
-        {% else %}
-            <p class="text-center">Aucune donnée disponible pour cette section.</p>
-        {% endif %}
+
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
-                <p class="mb-0">
-                    
+                <p class="mb-0">    
                 </p>
             </div>
             <div class="col-md-4 col-6 text-white bg-dark text-uppercase">
@@ -496,11 +491,13 @@
                 </p>
             </div>
         </div>
+        {% comment %} Le code pour le modals {% endcomment %}
+
+        {% comment %} Le code pour le modals {% endcomment %}
 
     </div>
 
     <div id="section4" class="container py-1 {% if section == '4' %} d-block {% else %} d-none {% endif %}">
-        {% if heures %}
         <div class="row bg-white text-black text-center py-1 rounded">
             <!-- Contenu de la section 4 -->
             <div class="col-md-1 col-6">
@@ -543,10 +540,10 @@
                 </div>
             </div>
             <div class="col-md-1 col-6">
-                <p class="mb-0"> {{ heure.emploitemps.eleve.niveau }} ème </p>
+                <p class="mb-0"> {{ heure.emploitemps__eleve__niveau }} ème </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0"> {{ heure.emploitemps.eleve.classe }} </p>
+                <p class="mb-0"> {{ heure.emploitemps__eleve__classe }} </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_dues }} h</p>
@@ -578,9 +575,6 @@
             </div>
         </div>
         {% endfor %}
-        {% else %}
-            <p class="text-center">Aucune donnée disponible pour cette section.</p>
-        {% endif %}
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <p class="mb-0">
@@ -598,7 +592,8 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
+                <a class="btn btn-info text-white btn-sx" data-bs-toggle="modal"
+                 data-bs-target="#addModalSection4">
                     <i class="bi bi-arrow-repeat"></i>
                 </a>
             </div>
@@ -608,10 +603,64 @@
                 </p>
             </div>
         </div>
+        <!-- MODAL : PROFESSEURS & HEURES – SECTION 4 -->
+        <div class="modal fade" id="addModalSection4" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
+
+                    <!-- Header -->
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            Professeurs & heures – 4ème
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+                    {% for prof in professeurs %}
+                    <!-- Body -->
+                    <div class="modal-body">
+                        <div class="row text-black text-center align-items-center py-1 rounded">
+                            <!-- Avatar -->
+                            <div class="col-2 col-md-1 d-flex justify-content-center">
+                                <div class="rounded-circle border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                                    <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+                            <!-- Détails Professeur --> 
+                            <div class="col-10 col-md-4 text-start">
+                                <p class="mb-0">{{ prof.nom }} </p>
+                            </div>
+                            <div class="col-6 col-md-3 text-start">
+                                <p class="mb-0">{{ prof.fonction }}</p>
+                            </div>
+                            <div class="col-6 col-md-2 text-start">
+                                <p class="mb-0">{{ prof.heure_matiere }} h</p>
+                            </div>
+                            <div class="col-12 col-md-2 text-end">
+                            <a href="#" class="">
+                                <p class="mb-0"> <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i></p>
+                            </a>
+                        </div>
+                        <!-- Ligne de séparation -->
+                        <div class="col-md-1 col-6"></div>
+                        <div class="col-md-11 col-6">
+                            <hr class="border border-dark border-1 mt-2">
+                        </div>
+                        </div>
+                    </div>
+                    {% endfor%}                    <!-- Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Fermer
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+        
     </div>
 
     <div id="section3" class="container py-1 {% if section == '3' %} d-block {% else %} d-none {% endif %}">
-        {% if heures %}
         <div class="row bg-white text-black text-center py-1 rounded">
             <!-- Contenu de la section 0 -->
             <div class="col-md-1 col-6">
@@ -649,10 +698,10 @@
                 </div>
             </div>
             <div class="col-md-1 col-6">
-                <p class="mb-0"> {{ heure.emploitemps.eleve.niveau }} ème </p>
+                <p class="mb-0"> {{ heure.emploitemps__eleve__niveau }} ème </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">{{ heure.emploitemps.eleve.classe }}</p>
+                <p class="mb-0">{{ heure.emploitemps__eleve__classe }}</p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_dues }} h</p>
@@ -685,9 +734,6 @@
             </div>
         </div>
         {% endfor %}
-        {% else %}
-            <p class="text-center">Aucune donnée disponible pour cette section.</p>
-        {% endif %}
         <div class="row bg-light text-black text-center py-1 rounded">
            
             <div class="col-md-1 col-6 ">
@@ -706,7 +752,7 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a  href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
+                <a class="btn btn-info text-white btn-sx">
                     <i class="bi bi-arrow-repeat"></i> 
                 </a>
             </div>
@@ -716,6 +762,9 @@
                 </p>
             </div>
         </div>
+        {% comment %} Le code pour le modals {% endcomment %}
+
+        {% comment %} Le code pour le modals {% endcomment %}
     </div>
 
 </div>

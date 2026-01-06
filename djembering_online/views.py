@@ -1,6 +1,6 @@
 from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
-from django.db.models import Sum, F, FloatField, Case, When, Value
+from django.db.models import Sum, F, Count, FloatField, Case, When, Value
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
@@ -82,6 +82,12 @@ def get_heures_par_section(section):
     heures = (
         heures_qs.values("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
         .annotate(
+            # 🔸 nombre de classes distinctes
+            nombre_classe=Count(
+                "emploitemps__eleve__classe", 
+                distinct=True
+            ),
+            # 🔸 sommes totales
             heures_dues=Sum("heures_dues"),
             heures_faites=Sum("heures_faites"),
             heures_complementaires=Sum("heures_complementaires"),
@@ -93,7 +99,7 @@ def get_heures_par_section(section):
                 output_field=FloatField()
             )
         )
-        .order_by("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
+        .order_by("emploitemps__eleve__niveau")
     )
 
     # Totaux par niveau
@@ -114,12 +120,17 @@ def gestion_heures_view(request, section=None):
         section = request.GET.get("section", "0")
     section, heures, totaux_niveau = get_heures_par_section(section)
 
+     # Liste des professeurs pour cette section/niveau
+    professeurs = Professeur.objects.filter(
+        emploitemps__eleve__niveau=section  # Relation via EmploiTemps
+    ).distinct().order_by('nom')
+
     return render(request, "gestions/gestion_heure.html", {
         "section": section,
         "heures": heures,
         "totaux_niveau": totaux_niveau,
+        "professeurs": professeurs,
     })
-
 
 def sections_view(request, section=None):
     if section is None:
