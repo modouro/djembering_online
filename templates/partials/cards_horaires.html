@@ -307,7 +307,7 @@
                 <p class="mb-0"> {{ heure.emploitemps__eleve__niveau }} ème </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0"> {{ heure.emploitemps.eleve.classe }} </p>
+                <p class="mb-0"> {{ heure.emploitemps__eleve__classe }} </p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_dues }} h</p>
@@ -358,14 +358,10 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                {% if section %}
-                    <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </a>
-                {% else %}
-                    <!-- Affiche un message ou cache le lien -->
-                    <span>Impossible de générer le lien : niveau manquant</span>
-                {% endif %}
+                <a class="btn btn-info text-white btn-sx" data-bs-toggle="modal"
+                 data-bs-target="#addModalSection6">
+                    <i class="bi bi-arrow-repeat"></i>
+                </a>
             </div>
             <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
@@ -373,9 +369,86 @@
                 </p>
             </div>
         </div>
-        {% comment %} Le code pour le modals {% endcomment %}
+        <!-- MODAL : PROFESSEURS & HEURES -->
+        <div class="modal fade" id="addModalSection6" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
 
-        {% comment %} Le code pour le modals {% endcomment %}
+                    <!-- Header -->
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            Professeurs de la classe de {{ section }} ème
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body">
+
+                        <!-- DEBUG -->
+                        <p class="text-danger">
+                            DEBUG : {{ professeurs|length }} professeur(s)
+                        </p>
+
+                        {% for prof in professeurs %}
+                        <div class="row text-black align-items-center py-2 rounded">
+
+                            <!-- Avatar -->
+                            <div class="col-2 col-md-1 d-flex justify-content-center">
+                                <div class="rounded-circle border d-flex justify-content-center align-items-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+
+                            <!-- Nom -->
+                            <div class="col-10 col-md-4 text-start">
+                                <p class="mb-0 fw-bold">
+                                {{ prof.nom }}
+                                </p>
+                            </div>
+
+                            <!-- Fonction -->
+                            <div class="col-6 col-md-3 text-start">
+                                <p class="mb-0">
+                                    {{ prof.fonction }}
+                                </p>
+                            </div>
+
+                            <!-- Heures -->
+                            <div class="col-6 col-md-2 text-start">
+                                <p class="mb-0">
+                                    {{ prof.heure_matiere }} h
+                                </p>
+                            </div>
+
+                            <!-- Action -->
+                            <div class="col-12 col-md-2 text-end">
+                                <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i>
+                            </div>
+
+                        </div>
+
+                        <hr class="border border-dark border-1 my-2">
+
+                        {% empty %}
+                        <p class="text-center text-muted">
+                            Aucun professeur pour cette classe
+                        </p>
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Fermer
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
     </div>
     
     <div id="section5" class="container py-1 {% if section == '5' %} d-block {% else %} d-none {% endif %}">
@@ -476,14 +549,10 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                {% if section %}
-                    <a href="{% url 'page_maj_heures' section=section %}" class="btn btn-info text-white btn-sx">
-                        <i class="bi bi-arrow-repeat"></i>
-                    </a>
-                {% else %}
-                    <!-- Affiche un message ou cache le lien -->
-                    <span>Impossible de générer le lien : niveau manquant</span>
-                {% endif %}
+                <a class="btn btn-info text-white btn-sx" data-bs-toggle="modal"
+                 data-bs-target="#addModalSection5">
+                    <i class="bi bi-arrow-repeat"></i>
+                </a>
             </div>
             <div class="col-md-5 col-6 text-white bg-dark text-uppercase">
                 <p class="mb-0 ">
@@ -491,9 +560,86 @@
                 </p>
             </div>
         </div>
-        {% comment %} Le code pour le modals {% endcomment %}
+        <!-- MODAL : PROFESSEURS & HEURES -->
+        <div class="modal fade" id="addModalSection5" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
 
-        {% comment %} Le code pour le modals {% endcomment %}
+                    <!-- Header -->
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            Professeurs de la classe de {{ section }} ème
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body">
+
+                        <!-- DEBUG -->
+                        <p class="text-danger">
+                            DEBUG : {{ professeurs|length }} professeur(s)
+                        </p>
+
+                        {% for prof in professeurs %}
+                        <div class="row text-black align-items-center py-2 rounded">
+
+                            <!-- Avatar -->
+                            <div class="col-2 col-md-1 d-flex justify-content-center">
+                                <div class="rounded-circle border d-flex justify-content-center align-items-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+
+                            <!-- Nom -->
+                            <div class="col-10 col-md-4 text-start">
+                                <p class="mb-0 fw-bold">
+                                {{ prof.nom }}
+                                </p>
+                            </div>
+
+                            <!-- Fonction -->
+                            <div class="col-6 col-md-3 text-start">
+                                <p class="mb-0">
+                                    {{ prof.fonction }}
+                                </p>
+                            </div>
+
+                            <!-- Heures -->
+                            <div class="col-6 col-md-2 text-start">
+                                <p class="mb-0">
+                                    {{ prof.heure_matiere }} h
+                                </p>
+                            </div>
+
+                            <!-- Action -->
+                            <div class="col-12 col-md-2 text-end">
+                                <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i>
+                            </div>
+
+                        </div>
+
+                        <hr class="border border-dark border-1 my-2">
+
+                        {% empty %}
+                        <p class="text-center text-muted">
+                            Aucun professeur pour cette classe
+                        </p>
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Fermer
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
 
     </div>
 
@@ -603,7 +749,8 @@
                 </p>
             </div>
         </div>
-        <!-- MODAL : PROFESSEURS & HEURES – SECTION 4 -->
+
+        <!-- MODAL : PROFESSEURS & HEURES -->
         <div class="modal fade" id="addModalSection4" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">
                 <div class="modal-content">
@@ -611,43 +758,69 @@
                     <!-- Header -->
                     <div class="modal-header bg-info text-white">
                         <h5 class="modal-title">
-                            Professeurs & heures – 4ème
+                            Professeurs de la classe de {{ section }} ème
                         </h5>
                         <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                     </div>
-                    {% for prof in professeurs %}
+
                     <!-- Body -->
                     <div class="modal-body">
-                        <div class="row text-black text-center align-items-center py-1 rounded">
+
+                        <!-- DEBUG -->
+                        <p class="text-danger">
+                            DEBUG : {{ professeurs|length }} professeur(s)
+                        </p>
+
+                        {% for prof in professeurs %}
+                        <div class="row text-black align-items-center py-2 rounded">
+
                             <!-- Avatar -->
                             <div class="col-2 col-md-1 d-flex justify-content-center">
-                                <div class="rounded-circle border d-flex justify-content-center align-items-center" style="width: 40px; height: 40px;">
+                                <div class="rounded-circle border d-flex justify-content-center align-items-center"
+                                    style="width: 40px; height: 40px;">
                                     <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
                                 </div>
                             </div>
-                            <!-- Détails Professeur --> 
+
+                            <!-- Nom -->
                             <div class="col-10 col-md-4 text-start">
-                                <p class="mb-0">{{ prof.nom }} </p>
+                                <p class="mb-0 fw-bold">
+                                {{ prof.nom }}
+                                </p>
                             </div>
+
+                            <!-- Fonction -->
                             <div class="col-6 col-md-3 text-start">
-                                <p class="mb-0">{{ prof.fonction }}</p>
+                                <p class="mb-0">
+                                    {{ prof.fonction }}
+                                </p>
                             </div>
+
+                            <!-- Heures -->
                             <div class="col-6 col-md-2 text-start">
-                                <p class="mb-0">{{ prof.heure_matiere }} h</p>
+                                <p class="mb-0">
+                                    {{ prof.heure_matiere }} h
+                                </p>
                             </div>
+
+                            <!-- Action -->
                             <div class="col-12 col-md-2 text-end">
-                            <a href="#" class="">
-                                <p class="mb-0"> <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i></p>
-                            </a>
+                                <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i>
+                            </div>
+
                         </div>
-                        <!-- Ligne de séparation -->
-                        <div class="col-md-1 col-6"></div>
-                        <div class="col-md-11 col-6">
-                            <hr class="border border-dark border-1 mt-2">
-                        </div>
-                        </div>
+
+                        <hr class="border border-dark border-1 my-2">
+
+                        {% empty %}
+                        <p class="text-center text-muted">
+                            Aucun professeur pour cette classe
+                        </p>
+                        {% endfor %}
+
                     </div>
-                    {% endfor%}                    <!-- Footer -->
+
+                    <!-- Footer -->
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
                             Fermer
@@ -657,7 +830,6 @@
                 </div>
             </div>
         </div>
-        
     </div>
 
     <div id="section3" class="container py-1 {% if section == '3' %} d-block {% else %} d-none {% endif %}">
@@ -752,7 +924,8 @@
                 </a>
             </div>
             <div class="col-md-1 col-6">
-                <a class="btn btn-info text-white btn-sx">
+                <a class="btn btn-info text-white btn-sx" data-bs-toggle="modal" 
+                 data-bs-target="#addModalSection3">
                     <i class="bi bi-arrow-repeat"></i> 
                 </a>
             </div>
@@ -762,9 +935,87 @@
                 </p>
             </div>
         </div>
-        {% comment %} Le code pour le modals {% endcomment %}
+        <!-- MODAL : PROFESSEURS & HEURES -->
+        <div class="modal fade" id="addModalSection3" tabindex="-1" aria-hidden="true">
+            <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">
+                <div class="modal-content">
 
-        {% comment %} Le code pour le modals {% endcomment %}
+                    <!-- Header -->
+                    <div class="modal-header bg-info text-white">
+                        <h5 class="modal-title">
+                            Professeurs de la classe de {{ section }} ème
+                        </h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                    </div>
+
+                    <!-- Body -->
+                    <div class="modal-body">
+
+                        <!-- DEBUG -->
+                        <p class="text-danger">
+                            DEBUG : {{ professeurs|length }} professeur(s)
+                        </p>
+
+                        {% for prof in professeurs %}
+                        <div class="row text-black align-items-center py-2 rounded">
+
+                            <!-- Avatar -->
+                            <div class="col-2 col-md-1 d-flex justify-content-center">
+                                <div class="rounded-circle border d-flex justify-content-center align-items-center"
+                                    style="width: 40px; height: 40px;">
+                                    <i class="bi bi-stack" style="font-size: 1.5rem;"></i>
+                                </div>
+                            </div>
+
+                            <!-- Nom -->
+                            <div class="col-10 col-md-4 text-start">
+                                <p class="mb-0 fw-bold">
+                                {{ prof.nom }}
+                                </p>
+                            </div>
+
+                            <!-- Fonction -->
+                            <div class="col-6 col-md-3 text-start">
+                                <p class="mb-0">
+                                    {{ prof.fonction }}
+                                </p>
+                            </div>
+
+                            <!-- Heures -->
+                            <div class="col-6 col-md-2 text-start">
+                                <p class="mb-0">
+                                    {{ prof.heure_matiere }} h
+                                </p>
+                            </div>
+
+                            <!-- Action -->
+                            <div class="col-12 col-md-2 text-end">
+                                <i class="bi bi-chevron-right" style="font-size: 1.3rem;"></i>
+                            </div>
+
+                        </div>
+
+                        <hr class="border border-dark border-1 my-2">
+
+                        {% empty %}
+                        <p class="text-center text-muted">
+                            Aucun professeur pour cette classe
+                        </p>
+                        {% endfor %}
+
+                    </div>
+
+                    <!-- Footer -->
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">
+                            Fermer
+                        </button>
+                    </div>
+
+                </div>
+            </div>
+        </div>
+
     </div>
 
 </div>

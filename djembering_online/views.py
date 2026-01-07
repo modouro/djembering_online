@@ -117,15 +117,31 @@ def get_heures_par_section(section):
 
 def gestion_heures_view(request, section=None):
     if section is None:
-        section = request.GET.get("section", "0")
+        section = request.GET.get("section", 0)
+
+    try:
+        section = int(section)
+    except (ValueError, TypeError):
+        section = 0
+
+    classe = request.GET.get("classe")
+
     section, heures, totaux_niveau = get_heures_par_section(section)
 
-     # Liste des professeurs pour cette section/niveau
+    # 🔹 Base queryset : professeurs ayant enseigné dans ce niveau
     professeurs = Professeur.objects.filter(
-        emploitemps__eleve__niveau=section  # Relation via EmploiTemps
-    ).distinct().order_by('nom')
+           emploitemps__eleve__niveau=section
+       ) 
+    # 🔹 On filtre par classe UNIQUEMENT si elle est fournie
+    if classe:
+        professeurs = professeurs.filter(
+            emploitemps__eleve__classe=classe
+        )
 
+    professeurs = professeurs.distinct("nom")
+    
     return render(request, "gestions/gestion_heure.html", {
+        "classe": classe,
         "section": section,
         "heures": heures,
         "totaux_niveau": totaux_niveau,
@@ -134,7 +150,8 @@ def gestion_heures_view(request, section=None):
 
 def sections_view(request, section=None):
     if section is None:
-        return redirect("/gestion_heure/0/")
+        """ return redirect("/gestion_heure/0/") """
+        return redirect(f"{reverse('gestions_heure')}?section=0")
 
     section, heures, totaux_niveau = get_heures_par_section(section)
 
@@ -144,8 +161,7 @@ def sections_view(request, section=None):
         "totaux_niveau": totaux_niveau,
     })
 
-# tu peux utiliser ce template pour ajouter les heures supplementaires ou modifier heure suppl
-# comment ajouter les l'heures dues dans la table
+
 def ajouter_calcul_heures(request):
     # On récupère la section depuis l'URL
     section = request.GET.get("section")
