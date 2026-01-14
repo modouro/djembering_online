@@ -73,9 +73,7 @@
         </div>
 
         <!-- Données -->
-        {% for total in totaux_niveau %}
-            
-         
+        {% for total in totaux_niveau %} 
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
@@ -94,10 +92,13 @@
             <div class="col-md-3 col-6">
                 <p class="mb-0">{{ total.total_heures_complementaires }} h</p>
             </div>
-
+            
             <div class="col-md-2 col-6">
-                <p class="mb-0">87.5%</p>
+                <p class="mb-0">
+                    {{ total.ratio|floatformat:1 }}%
+                </p>
             </div>
+
 
             <!-- C'est pour créer la ligne horizontal -->
             <div class="col-md-1"></div>
@@ -105,161 +106,10 @@
                 <hr class="border border-dark border-1 justify-content-end">
             </div>
         </div> 
-          
         {% empty %}
             <p class="text-center">Aucune donnée disponible</p>
         {% endfor %} 
         
-        <!-- Données supplémentaires -->
-        <div class="row bg-light text-black text-center py-1 rounded">
-            <div class="col-md-1 col-6">
-                <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">45h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">42h</p>
-            </div>
-            <div class="col-md-3 col-6">
-                <p class="mb-0">3h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">93.3%</p>
-            </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div>
-        </div>
-
-        <!-- Données supplémentaires -->
-        <div class="row bg-light text-black text-center py-1 rounded">
-            <div class="col-md-1 col-6">
-                <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">50h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">48h</p>
-            </div>
-            <div class="col-md-3 col-6">
-                <p class="mb-0">2h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">96%</p>
-            </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div>
-        </div>
-
-        <!-- Données supplémentaires -->
-        <div class="row bg-light text-black text-center py-1 rounded">
-            <div class="col-md-1 col-6">
-                <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">{{ total.emploitemps__eleve__niveau }} ème</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">50h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">48h</p>
-            </div>
-            <div class="col-md-3 col-6">
-                <p class="mb-0">2h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">96%</p>
-            </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div>
-        </div>
-
-        <!-- Données supplémentaires -->
-        <div class="row bg-light text-black text-center py-2 rounded">
-            <div class="col-md-1 col-6">
-                <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0"> Total</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">50h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">48h</p>
-            </div>
-            <div class="col-md-3 col-6">
-                <p class="mb-0">2h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">96%</p>
-            </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div>
-        </div>
-
-        <!-- Données supplémentaires -->
-        <div class="row bg-light text-black text-center py-2 rounded">
-            <div class="col-md-1 col-6">
-                <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
-                    <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
-                </div>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">Moyenne</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">50h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">48h</p>
-            </div>
-            <div class="col-md-3 col-6">
-                <p class="mb-0">2h</p>
-            </div>
-            <div class="col-md-2 col-6">
-                <p class="mb-0">96%</p>
-            </div>
-
-            <!-- C'est pour créer la ligne horizontal -->
-            <div class="col-md-1"></div>
-            <div class="col-md-11">
-                <hr class="border border-dark border-1 justify-content-end">
-            </div>
-        </div>
-
     </div>
 
     <div id="section6" class="container py-1 {% if section == '6' %} d-block {% else %} d-none {% endif %}">
@@ -298,7 +148,7 @@
         </div>
         {% for heure in heures %}
         <div class="row bg-light text-black text-center py-1 rounded">
-             <div class="col-md-1 col-6">
+            <div class="col-md-1 col-6">
                 <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
                     <i class="bi bi-person-fill" style="font-size: 1.5rem;"></i>
                 </div>
@@ -324,7 +174,7 @@
             </div>
             <div class="col-md-2 col-6">
                 {% if heure.ratio %}
-                    {{ heure.ratio|floatformat:2 }} %
+                    {{ heure.ratio|floatformat:1 }} %
                 {% else %}
                     0 %
                 {% endif %}
@@ -879,7 +729,6 @@
                 <p class="mb-0"> {{ heure.heures_dues }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                {% comment %} <p class="mb-0"> {{ heure.heures_faites }} h</p> {% endcomment %}
                  <p class="mb-0">
                     {% if heure.heures_faites < 0 %}
                         0 h

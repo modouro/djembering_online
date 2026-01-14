@@ -1,6 +1,6 @@
 from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
-from django.db.models import Sum, F, Count, FloatField, Case, When, Value
+from django.db.models import Sum, F, Count, FloatField, Case, When, Value, ExpressionWrapper
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
@@ -75,12 +75,17 @@ def get_heures_par_section(section):
         "emploitemps", "emploitemps__eleve"
     )
 
-    if section_int is not None:
-        heures_qs = heures_qs.filter(emploitemps__eleve__niveau=section_int)
+    if section_int not in (None, 0):
+        heures_qs = heures_qs.filter(
+            emploitemps__eleve__niveau=section_int
+        )
 
     # Agrégation par niveau + classe
     heures = (
-        heures_qs.values("emploitemps__eleve__niveau", "emploitemps__eleve__classe")
+        heures_qs.values(
+            "emploitemps__eleve__niveau", 
+            "emploitemps__eleve__classe"
+        )
         .annotate(
             # 🔸 nombre de classes distinctes
             nombre_classe=Count(
@@ -94,43 +99,64 @@ def get_heures_par_section(section):
         )
         .annotate(
             ratio=Case(
-                When(heures_dues=0, then=Value(0.0)),
-                default=F("heures_faites") * 100.0 / F("heures_dues"),
+                When(heures_dues__lte=0, then=Value(0.0)),
+                default=ExpressionWrapper(
+                    F("heures_faites") * 100.0 / F("heures_dues"),
+                    output_field=FloatField()
+                ),
                 output_field=FloatField()
             )
         )
-        .order_by("emploitemps__eleve__niveau")
+        .order_by("-emploitemps__eleve__niveau")
     )
 
-    # Totaux par niveau
+    # 🔹 SOMME PAR MÊME NIVEAU 
     totaux_niveau = (
         heures_qs.values("emploitemps__eleve__niveau")
         .annotate(
             total_heures_dues=Sum("heures_dues"),
             total_heures_faites=Sum("heures_faites"),
             total_heures_complementaires=Sum("heures_complementaires"),
+
         )
-        .order_by("emploitemps__eleve__niveau")
+        .annotate(
+            ratio=Case(
+                When(total_heures_dues__lte=0, then=Value(0.0)),
+                default=ExpressionWrapper(
+                    F("total_heures_faites") * 100.0 / F("total_heures_dues"),
+                    output_field=FloatField()
+            ),
+            output_field=FloatField()
+        )
+    )
+        .order_by("-emploitemps__eleve__niveau")
     )
 
-    return section, heures, totaux_niveau
+    return heures, totaux_niveau
 
 def gestion_heures_view(request, section=None):
-    if section is None:
-        section = request.GET.get("section", 0)
+    # section Pour le template (string)
+    """ if section is None:
+        section = request.GET.get("section", "0") """
+    section_str = request.GET.get("section", "0") if section is None else str(section)
 
+    """ section_str = str(section) """
+
+    # section POUR LA DB (int)
     try:
-        section = int(section)
+        section_int = int(section_str)
     except (ValueError, TypeError):
-        section = 0
+        section_int = None
 
     classe = request.GET.get("classe")
 
-    section, heures, totaux_niveau = get_heures_par_section(section)
+    heures, totaux_niveau = get_heures_par_section(section_int)
 
     # 🔹 Base queryset : professeurs ayant enseigné dans ce niveau
-    professeurs = Professeur.objects.filter(
-           emploitemps__eleve__niveau=section
+    professeurs = Professeur.objects.all()
+    if section_int not in (None, 0):
+        professeurs = Professeur.objects.filter(
+           emploitemps__eleve__niveau=section_int
        ) 
     # 🔹 On filtre par classe UNIQUEMENT si elle est fournie
     if classe:
@@ -142,7 +168,7 @@ def gestion_heures_view(request, section=None):
     
     return render(request, "gestions/gestion_heure.html", {
         "classe": classe,
-        "section": section,
+        "section": section_str, # 👈 STRING pour le template
         "heures": heures,
         "totaux_niveau": totaux_niveau,
         "professeurs": professeurs,
@@ -153,10 +179,10 @@ def sections_view(request, section=None):
         """ return redirect("/gestion_heure/0/") """
         return redirect(f"{reverse('gestions_heure')}?section=0")
 
-    section, heures, totaux_niveau = get_heures_par_section(section)
+    heures, totaux_niveau = get_heures_par_section(section)
 
     return render(request, "gestions/gestion_heure.html", {
-        "section": section,
+        "section": str(section),
         "heures": heures,
         "totaux_niveau": totaux_niveau,
     })
