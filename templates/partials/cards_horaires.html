@@ -137,7 +137,7 @@
                 <h6 class="fw-bold bg-dark text-white">Heures Comp.</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold bg-dark text-white">Ratio (%)</h6>
+                <h6 class="fw-bold bg-dark text-white">Total </h6>
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -166,17 +166,17 @@
                 {% if heure.heures_faites < 0 %}
                     0 h
                 {% else %}
-                    {{ heure.heures_faites }} h
+                    {{ heure.heures_faites|floatformat:1 }} h
                 {% endif %}
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0"> {{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                {% if heure.ratio %}
-                    {{ heure.ratio|floatformat:1 }} %
+                {% if heure.heures_total is not None %}
+                    {{ heure.heures_total|floatformat:1 }} h
                 {% else %}
-                    0 %
+                    0 h
                 {% endif %}
                 <div class="col-md-2 col-6">
         </div>
@@ -190,7 +190,86 @@
             </div>
         </div>
          {% endfor %}
-       
+        
+         {% comment %} afficher les totaux par niveau {% endcomment %}
+        {% for total in totaux_niveau %}
+            <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-plus-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Total </p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ total.nombre_classes }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if total.total_heures|floatformat:1  is not None %}
+                        {{ total.total_heures|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+                    <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <hr class="border border-dark border-1 justify-content-end">
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-dash-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Moyenne</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ heure.emploitemps__eleve__classe }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if heure.heures_total is not None %}
+                        {{ heure.heures_total|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+        </div>
+        
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <p class="mb-0">
@@ -327,7 +406,7 @@
                 <h6 class="fw-bold">Heures Comp.</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Ratio (%)</h6>
+                <h6 class="fw-bold">Total </h6>
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -352,7 +431,7 @@
                 <p class="mb-0">{{ heure.emploitemps__eleve__classe }} </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0">{{ heure.heures_dues }} h</p>
+                <p class="mb-0">{{ heure.heures_dues|floatformat:1 }} h</p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">
@@ -367,10 +446,10 @@
                 <p class="mb-0">{{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                {% if heure.ratio %}
-                    {{ heure.ratio|floatformat:1 }} %
+                {% if heure.heures_total is not None %}
+                    {{ heure.heures_total|floatformat:1 }} h
                 {% else %}
-                    0 %
+                    0 h
                 {% endif %}
 
             </div>
@@ -382,6 +461,85 @@
             </div>
         </div>
         {% endfor %}
+
+         {% comment %} afficher les totaux par niveau {% endcomment %}
+        {% for total in totaux_niveau %}
+            <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-plus-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Total </p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ total.nombre_classes }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if total.total_heures|floatformat:1  is not None %}
+                        {{ total.total_heures|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+                    <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <hr class="border border-dark border-1 justify-content-end">
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-dash-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Moyenne</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ heure.emploitemps__eleve__classe }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if heure.heures_total is not None %}
+                        {{ heure.heures_total|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+        </div>
 
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
@@ -519,7 +677,7 @@
                 <h6 class="fw-bold">Heures Comp.</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Ratio (%)</h6>
+                <h6 class="fw-bold">Total </h6>
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -542,14 +700,14 @@
                 <p class="mb-0"> {{ heure.emploitemps__eleve__classe }} </p>
             </div>
             <div class="col-md-2 col-6">
-                <p class="mb-0"> {{ heure.heures_dues }} h</p>
+                <p class="mb-0"> {{ heure.heures_dues|floatformat:1 }} h</p>
             </div>
             <div class="col-md-2 col-6">
                 <p class="mb-0">
                     {% if heure.heures_faites < 0 %}
                         0 h
                     {% else %}
-                        {{ heure.heures_faites }} h
+                        {{ heure.heures_faites|floatformat:1 }} h
                     {% endif %}
                 </p>
             </div>
@@ -557,10 +715,10 @@
                 <p class="mb-0"> {{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                {% if heure.ratio %}
-                    {{ heure.ratio|floatformat:1 }} %
+                {% if heure.heures_total is not None %}
+                    {{ heure.heures_total|floatformat:1 }} h
                 {% else %}
-                    0 %
+                    0 h
                 {% endif %}
             </div>
 
@@ -571,6 +729,87 @@
             </div>
         </div>
         {% endfor %}
+
+        
+        {% comment %} afficher les totaux par niveau {% endcomment %}
+        {% for total in totaux_niveau %}
+            <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-plus-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Total </p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ total.nombre_classes }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if total.total_heures|floatformat:1  is not None %}
+                        {{ total.total_heures|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+                    <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <hr class="border border-dark border-1 justify-content-end">
+                </div>
+            </div>
+        {% endfor %}
+
+        <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-dash-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Moyenne</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ heure.emploitemps__eleve__classe }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if heure.heures_total is not None %}
+                        {{ heure.heures_total|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+            </div>
+
         <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6">
                 <p class="mb-0">
@@ -599,7 +838,6 @@
                 </p>
             </div>
         </div>
-
         <!-- MODAL : PROFESSEURS & HEURES -->
         <div class="modal fade" id="addModalSection4" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">
@@ -703,7 +941,7 @@
                 <h6 class="fw-bold">Heures Comp.</h6>
             </div>
             <div class="col-md-2 col-6">
-                <h6 class="fw-bold">Ratio (%)</h6>
+                <h6 class="fw-bold">Total </h6>
             </div>
 
             <!-- C'est pour créer la ligne horizontal -->
@@ -733,7 +971,7 @@
                     {% if heure.heures_faites < 0 %}
                         0 h
                     {% else %}
-                        {{ heure.heures_faites|add:"1" }} h
+                        {{ heure.heures_faites|floatformat:1 }} h
                     {% endif %}
                 </p>
             </div>
@@ -741,10 +979,10 @@
                 <p class="mb-0"> {{ heure.heures_complementaires }} h</p>
             </div>
             <div class="col-md-2 col-6">
-                {% if heure.ratio %}
-                    {{ heure.ratio|floatformat:1 }} %
+                {% if heure.heures_total is not None %}
+                    {{ heure.heures_total|floatformat:1 }} h
                 {% else %}
-                    0 %
+                    0 h
                 {% endif %}
             </div>
 
@@ -755,8 +993,87 @@
             </div>
         </div>
         {% endfor %}
+
+        {% comment %} afficher les totaux par niveau {% endcomment %}
+        {% for total in totaux_niveau %}
+            <div class="row bg-light text-black text-center py-1 rounded">
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-plus-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Total </p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ total.nombre_classes }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if total.total_heures|floatformat:1  is not None %}
+                        {{ total.total_heures|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+                    <div class="col-md-1"></div>
+                <div class="col-md-11">
+                    <hr class="border border-dark border-1 justify-content-end">
+                </div>
+            </div>
+        {% endfor %}
+
         <div class="row bg-light text-black text-center py-1 rounded">
-           
+                <div class="col-md-1 col-6 ">
+                    <div class="d-flex align-items-center justify-content-center rounded-circle border" style="width: 25px; height: 25px; border-width: 10px; border-color: black;">
+                        <i class="bi bi-dash-square-fill" style="font-size: 1.5rem;"></i>
+                    </div>
+                </div>
+                <div class="col-md-1 col-6 text-black fw-bold">
+                    <p class="mb-0"> Moyenne</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">{{ heure.emploitemps__eleve__classe }}</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_dues|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 text-black fw-bold">
+                    <p class="mb-0">
+                        {% if total.total_heures_faites < 0 %}
+                            0 h
+                        {% else %}
+                            {{ total.total_heures_faites|default:0|floatformat:1 }} h
+                        {% endif %}
+                    </p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    <p class="mb-0"> {{ total.total_heures_complementaires|default:0|floatformat:1 }} h</p>
+                </div>
+                <div class="col-md-2 col-6 fw-bold">
+                    {% if heure.heures_total is not None %}
+                        {{ heure.heures_total|floatformat:1 }} h
+                    {% else %}
+                        0 h
+                    {% endif %}
+                </div>
+        </div>
+
+        <div class="row bg-light text-black text-center py-1 rounded">
             <div class="col-md-1 col-6 ">
                 <p class="mb-0">
                     
@@ -784,6 +1101,7 @@
                 </p>
             </div>
         </div>
+
         <!-- MODAL : PROFESSEURS & HEURES -->
         <div class="modal fade" id="addModalSection3" tabindex="-1" aria-hidden="true">
             <div class="modal-dialog modal-dialog-lg modal-dialog-centered modal-dialog-scrollable">

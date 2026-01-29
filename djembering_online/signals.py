@@ -19,10 +19,14 @@ def apres_sauvegarde_emploitemps(sender, instance, created, **kwargs):
         emploitemps=instance
     )
 
-    # ✅ TOUJOURS synchroniser les heures dues
-    calcul.heures_dues = instance.professeur.heure_matiere
+    # ✅ heures_dues vient bien de la DB (comme tu veux)
+    calcul.heures_faites = max(instance.professeur.heure_matiere or 0, 0)
+    
+    # 🛡️ Sécurité : initialisation propre
+    calcul.heures_faites = max(calcul.heures_faites or 0, 0)
 
     if created:
+        calcul.date_changement = date.today()
         calcul.save()
         return
 
@@ -30,10 +34,11 @@ def apres_sauvegarde_emploitemps(sender, instance, created, **kwargs):
     nouveau = instance.etat
 
     if ancien == nouveau:
+        calcul.date_changement = date.today()
         calcul.save()
         return
 
-    duree = instance.duree_heures
+    duree = max(instance.duree_heures or 0, 0)
 
     # ➕ Cours effectué
     if ancien == 'Non effectué' and nouveau == 'Effectué':
@@ -41,7 +46,11 @@ def apres_sauvegarde_emploitemps(sender, instance, created, **kwargs):
 
     # ➖ Annulation
     elif ancien == 'Effectué' and nouveau == 'Non effectué':
-        calcul.heures_faites = max(calcul.heures_faites - duree, 0)
+        calcul.heures_faites -= duree 
+
+    # 🛡️ BLOQUER toute valeur négative
+    calcul.heures_faites = max(calcul.heures_faites, 0)
+
 
     # 🔥 Heures supplémentaires (par professeur)
     calcul.heures_complementaires = max(

@@ -1,6 +1,7 @@
 from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
 from django.db.models import Sum, F, Count, FloatField, Case, When, Value, ExpressionWrapper
+from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout
 from django.contrib.auth.decorators import login_required
@@ -97,6 +98,14 @@ def get_heures_par_section(section):
             heures_faites=Sum("heures_faites"),
             heures_complementaires=Sum("heures_complementaires"),
         )
+
+        .annotate(
+            heures_total=ExpressionWrapper(
+                Coalesce(F("heures_faites"), 0) + Coalesce(F("heures_complementaires"), 0),
+                output_field=FloatField()
+            )
+        )
+
         .annotate(
             ratio=Case(
                 When(heures_dues__lte=0, then=Value(0.0)),
@@ -114,11 +123,24 @@ def get_heures_par_section(section):
     totaux_niveau = (
         heures_qs.values("emploitemps__eleve__niveau")
         .annotate(
+            nombre_classes=Count(
+                "emploitemps__eleve__classe",
+                distinct=True
+            ),
             total_heures_dues=Sum("heures_dues"),
             total_heures_faites=Sum("heures_faites"),
             total_heures_complementaires=Sum("heures_complementaires"),
 
         )
+        .annotate(
+        total_heures=ExpressionWrapper(
+            Coalesce(F("total_heures_faites"), 0)
+            + Coalesce(F("total_heures_complementaires"), 0),
+            output_field=FloatField()
+            )
+        )
+    .order_by("-emploitemps__eleve__niveau")
+
         .annotate(
             ratio=Case(
                 When(total_heures_dues__lte=0, then=Value(0.0)),
