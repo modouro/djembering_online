@@ -20,7 +20,7 @@ def apres_sauvegarde_emploitemps(sender, instance, created, **kwargs):
     )
 
     # ✅ heures_dues vient bien de la DB (comme tu veux)
-    calcul.heures_faites = max(instance.professeur.heure_matiere or 0, 0)
+    calcul.heures_dues = max(instance.professeur.heure_matiere or 0, 0)
     
     # 🛡️ Sécurité : initialisation propre
     calcul.heures_faites = max(calcul.heures_faites or 0, 0)

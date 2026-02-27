@@ -83,7 +83,8 @@ DATABASES = {
      'ENGINE': 'django.db.backends.postgresql',
      'NAME': 'certification24',
      'USER': 'postgres',
-     'PASSWORD': 'Zerty@@@2025',
+    #  'PASSWORD': 'Zerty@@@2025',
+     'PASSWORD': 'postgres', 
      'HOST': 'localhost',  # Ou l'adresse IP de votre serveur PostgreSQL login admin : mamadoudie
      'PORT': '5432',       # Par défaut, PostgreSQL utilise le port 5432  pwd:mamadoudie
      'OPTIONS': {
