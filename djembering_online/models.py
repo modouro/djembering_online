@@ -80,7 +80,7 @@ class Eleves(models.Model):
         )
 
     def clean(self):
-        if self.date_naissance > now().date():
+        if self.date_naissance and self.date_naissance> now().date():
             raise ValidationError(_("La date de naissance ne peut pas être dans le futur."))
 
 class Professeur(models.Model):
