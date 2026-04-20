@@ -1,6 +1,6 @@
 from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
-from django.db.models import Sum, F, Count, FloatField, Case, When, Value, ExpressionWrapper
+from django.db.models import Sum, F, Count, FloatField, Case, When, Value, ExpressionWrapper, Min
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout
@@ -209,7 +209,6 @@ def sections_view(request, section=None):
         "totaux_niveau": totaux_niveau,
     })
 
-
 def ajouter_calcul_heures(request):
     # On récupère la section depuis l'URL
     section = request.GET.get("section")
@@ -255,7 +254,6 @@ def ajouter_calcul_heures(request):
         'emploitemps': emploitemps,
         'section': section
     })
-
 
 # Page avec le bouton pour lancer la mise à jour
 
@@ -390,7 +388,10 @@ def gestions_emploi_view(request, section=None, day=None):
 
 def add_emploi_view(request):
     professeurs = Professeur.objects.all()
-    eleves = Eleves.objects.all()
+    # eleves = Eleves.objects.all()
+    # chaque niveau apparaît une seule fois
+
+    eleves = Eleves.objects.values('niveau').annotate(id=Min('id'))
 
     # Heure actuelle avec minutes à 00
     now = datetime.now().replace(minute=0, second=0, microsecond=0)

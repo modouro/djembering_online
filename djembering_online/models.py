@@ -49,6 +49,14 @@ class Administrateur(AbstractBaseUser, PermissionsMixin):
         if not self.telephone.isdigit() or len(self.telephone) != 10:
             raise ValidationError(_("Le numéro de téléphone doit contenir exactement 10 chiffres."))
 
+class Classe(models.Model):
+    niveau = models.IntegerField(verbose_name=_("Niveau"))
+    nom = models.CharField(max_length=10, verbose_name=_("Nom de classe"))  # A, B, C...
+
+    def __str__(self):
+        return f"Niveau {self.niveau} - Classe {self.nom}"
+    
+    
 class Eleves(models.Model):
     SEX_CHOICES = [
         ('M', _('Masculin')),
@@ -60,15 +68,7 @@ class Eleves(models.Model):
     lieu_naissance = models.CharField(max_length=150, verbose_name=_("Lieu de naissance"))
     sexe = models.CharField(max_length=1, choices=SEX_CHOICES, verbose_name=_("Sexe"))
     adresse = models.CharField(max_length=150, verbose_name=_("Adresse"))
-    niveau = models.IntegerField(
-    verbose_name=_("Niveau"),
-    validators=[
-        MinValueValidator(3),
-        MaxValueValidator(6)  # selon ton système éducatif, adapte cette limite
-    ]
-    )
-    classe = models.CharField(max_length=1, verbose_name=_("Classe"), blank=True, null=True)
-    # exemple : "A", "B", "C"
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, null=True, blank=True)
 
     def __str__(self):
         return f"{self.prenom} {self.nom}"
@@ -108,7 +108,7 @@ class Professeur(models.Model):
 
 class EmploiTemps(models.Model):
     professeur = models.ForeignKey(Professeur, verbose_name=_("Professeur"), on_delete=models.CASCADE)
-    eleve = models.ForeignKey(Eleves, verbose_name=_("Élève"), on_delete=models.CASCADE)
+    classe = models.ForeignKey(Classe, on_delete=models.CASCADE, verbose_name=_("Classe"))
     heure_debut = models.TimeField(verbose_name=_("Heure de début"))
     heure_fin = models.TimeField(verbose_name=_("Heure de fin"))
     jour = models.CharField(max_length=16, choices=[
@@ -128,11 +128,8 @@ class EmploiTemps(models.Model):
     )
 
     def __str__(self):
-        return f"{self.professeur} - {self.eleve} ({self.heure_debut} - {self.heure_fin} - {self.etat})"
+        return f"{self.professeur} - {self.classe} ({self.heure_debut} - {self.heure_fin} - {self.etat})"
 
-    @property
-    def niveau_eleve(self):
-        return self.eleve.niveau
 
     class Meta:
         constraints = [

@@ -54,7 +54,7 @@ class CongeEmployeForm(forms.ModelForm):
 class EmploiTempsForm(forms.ModelForm):
     class Meta:
         model = EmploiTemps
-        fields = ['professeur', 'eleve', 'heure_debut', 'heure_fin', 'jour']
+        fields = ['professeur', 'heure_debut', 'heure_fin', 'jour']
         widgets = {
             'professeur': forms.Select(attrs={'class': 'form-control'}),
             'eleve': forms.Select(attrs={'class': 'form-control'}),
@@ -64,7 +64,6 @@ class EmploiTempsForm(forms.ModelForm):
         }
         labels = {
             'professeur': 'Enseignant',
-            'eleve': 'Classe/Élève',
             'heure_debut': 'Heure de début',
             'heure_fin': 'Heure de fin',
             'jour': 'Jour',
@@ -74,11 +73,10 @@ class EmploiTempsForm(forms.ModelForm):
 class ElevesForm(forms.ModelForm):
     class Meta:
         model = Eleves
-        fields = ['prenom', 'nom', 'date_naissance', 'lieu_naissance', 'sexe', 'adresse', 'niveau', 'classe']
+        fields = ['prenom', 'nom', 'date_naissance', 'lieu_naissance', 'sexe', 'adresse', 'classe']
         widgets = {
             'date_naissance': forms.DateInput(attrs={'type': 'date', 'class': 'form-control'}),
             'sexe': forms.Select(attrs={'class': 'form-control'}),
-            'niveau': forms.TextInput(attrs={'class': 'form-control'}),
             'classe': forms.TextInput(attrs={'class': 'form-control'}),
             'prenom': forms.TextInput(attrs={'class': 'form-control'}),
             'nom': forms.TextInput(attrs={'class': 'form-control'}),
@@ -92,7 +90,6 @@ class ElevesForm(forms.ModelForm):
             'lieu_naissance': 'Lieu de naissance',
             'sexe': 'Sexe',
             'adresse': 'Adresse',
-            'niveau': 'Niveau',
             'classe': 'Classe',
         }
 
