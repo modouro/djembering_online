@@ -1,7 +1,8 @@
 from datetime import date
 from django import forms
+from django.core.exceptions import ValidationError
 from django.contrib.auth import get_user_model
-from .models import CongeEmploye, EmploiTemps, Eleves, Professeur, CalculHeures
+from .models import CongeEmploye, EmploiTemps, Eleves, Professeur, CalculHeures, Classe
 
 """ class LoginForm(AuthenticationForm): """
 class LoginForm(forms.Form):
@@ -49,7 +50,41 @@ class CongeEmployeForm(forms.ModelForm):
         if date_fin and date_debut and date_fin < date_debut:
             raise forms.ValidationError("La date de fin ne peut pas être avant la date de début.")
         return cleaned_data
+
+class ClasseForm(forms.ModelForm):
+    class Meta:
+        model = Classe
+        fields = ['niveau', 'nom']
+        widgets = {
+            'niveau': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Ex: 6, 5, 4 ou 3'}),
+             'nom': forms.TextInput(attrs={'class': 'form-control text-uppercase', 'placeholder': 'Ex: A, B, C, D'}),
+        }
+
+    def clean(self):
+        cleaned_data = super().clean()
+        niveau = cleaned_data.get("niveau")
+        nom = cleaned_data.get("nom")
+
+        # Mettre en majuscule
+        if nom:
+            nom = nom.upper()
+            cleaned_data["nom"] = nom
+
+        # Vérifier doublon
+        if niveau and nom:
+            qs = Classe.objects.filter(niveau=niveau, nom=nom)
+
+            if self.instance.pk:
+                qs = qs.exclude(pk=self.instance.pk)
+
+            if qs.exists():
+                raise ValidationError("Cette classe existe déjà.")
+
+        return cleaned_data
     
+   
+        
+
 # --------------------------- formulaire emploi du temps 
 class EmploiTempsForm(forms.ModelForm):
     class Meta:

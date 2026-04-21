@@ -1,6 +1,6 @@
 from datetime import  datetime, timedelta, date
 from django.forms import ValidationError
-from django.db.models import Sum, F, Count, FloatField, Case, When, Value, ExpressionWrapper, Min
+from django.db.models import Sum, F, Count, FloatField, Case, When, Value, ExpressionWrapper
 from django.db.models.functions import Coalesce
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth import login, get_user_model, logout
@@ -11,7 +11,7 @@ from django.utils.http import urlencode
 from django.views.decorators.http import require_POST
 from django.utils.timezone import now
 from django.contrib import messages
-from .models import Absence, Administrateur, CalculHeures, EmploiTemps, Eleves, Professeur, CongeEmploye
+from .models import Absence, Administrateur, CalculHeures, EmploiTemps, Eleves, Professeur, CongeEmploye, Classe
 from django.contrib.auth.hashers import make_password
 from .forms import  LoginForm, ElevesForm
 
@@ -64,6 +64,32 @@ def get_totals_context():
         "total_professeurs": Professeur.objects.count(),
         }
 
+def add_classe_view(request):
+    if request.method == "POST":
+        niveau = request.POST.get("niveau")
+        nom = request.POST.get("nom")
+
+        # sécurité basique
+        if not niveau or not nom:
+            messages.error(request, "Tous les champs sont obligatoires.", extra_tags="classe")
+            return redirect("gestion_classe")
+
+        # éviter doublon (6A, 6A interdit)
+        if Classe.objects.filter(niveau=niveau, nom=nom).exists():
+            messages.error(request, "Cette classe existe déjà.", extra_tags="classe")
+            return redirect("gestion_classe")
+
+        # création
+        Classe.objects.create(
+            niveau=int(niveau),
+            nom=nom.upper()
+        )
+
+        messages.success(request, "Classe ajoutée avec succès.", extra_tags="classe")
+        return redirect("gestion_classe")
+
+    return redirect("gestion_classe")
+
 
 def get_heures_par_section(section):
     try:
@@ -73,24 +99,24 @@ def get_heures_par_section(section):
 
     # Base queryset
     heures_qs = CalculHeures.objects.select_related(
-        "emploitemps", "emploitemps__eleve"
+        "emploitemps", "emploitemps__classe"
     )
 
     if section_int not in (None, 0):
         heures_qs = heures_qs.filter(
-            emploitemps__eleve__niveau=section_int
+            emploitemps__classe__niveau=section_int
         )
 
     # Agrégation par niveau + classe
     heures = (
         heures_qs.values(
-            "emploitemps__eleve__niveau", 
-            "emploitemps__eleve__classe"
+            "emploitemps__classe__niveau", 
+            "emploitemps__classe__nom"
         )
         .annotate(
             # 🔸 nombre de classes distinctes
             nombre_classe=Count(
-                "emploitemps__eleve__classe", 
+                "emploitemps__classe__niveau", 
                 distinct=True
             ),
             # 🔸 sommes totales
@@ -116,15 +142,15 @@ def get_heures_par_section(section):
                 output_field=FloatField()
             )
         )
-        .order_by("-emploitemps__eleve__niveau")
+        .order_by("-emploitemps__classe__niveau")
     )
 
     # 🔹 SOMME PAR MÊME NIVEAU 
     totaux_niveau = (
-        heures_qs.values("emploitemps__eleve__niveau")
+        heures_qs.values("emploitemps__classe__niveau")
         .annotate(
             nombre_classes=Count(
-                "emploitemps__eleve__classe",
+                "emploitemps__classe__niveau", 
                 distinct=True
             ),
             total_heures_dues=Sum("heures_dues"),
@@ -139,7 +165,7 @@ def get_heures_par_section(section):
             output_field=FloatField()
             )
         )
-    .order_by("-emploitemps__eleve__niveau")
+    .order_by("-emploitemps__classe__niveau")
 
         .annotate(
             ratio=Case(
@@ -151,7 +177,7 @@ def get_heures_par_section(section):
             output_field=FloatField()
         )
     )
-        .order_by("-emploitemps__eleve__niveau")
+        .order_by("-emploitemps__classe__niveau")
     )
 
     return heures, totaux_niveau
@@ -209,6 +235,7 @@ def sections_view(request, section=None):
         "totaux_niveau": totaux_niveau,
     })
 
+
 def ajouter_calcul_heures(request):
     # On récupère la section depuis l'URL
     section = request.GET.get("section")
@@ -255,7 +282,6 @@ def ajouter_calcul_heures(request):
         'section': section
     })
 
-# Page avec le bouton pour lancer la mise à jour
 
 def page_maj_heures(request, section):
     return render(request, 'gestions/maj_heures.html', {'section': section})
@@ -343,7 +369,7 @@ def gestions_emploi_view(request, section=None, day=None):
 
     # Filtrer les emplois
     # emplois = EmploiTemps.objects.filter(eleve__niveau=section, jour=day)
-    emplois = EmploiTemps.objects.filter(eleve__niveau=section, jour=day).select_related("professeur", "eleve")
+    emplois = EmploiTemps.objects.filter(classe__niveau=section, jour=day).select_related("professeur", "classe")
 
     # Pour chaque emploi, récupérer ses heures et calculer le ratio sécurisé
     heures = []
@@ -388,12 +414,7 @@ def gestions_emploi_view(request, section=None, day=None):
 
 def add_emploi_view(request):
     professeurs = Professeur.objects.all()
-    # eleves = Eleves.objects.all()
-    # chaque niveau apparaît une seule fois
-
-    eleves = Eleves.objects.values('niveau').annotate(id=Min('id'))
-
-    # Heure actuelle avec minutes à 00
+    
     now = datetime.now().replace(minute=0, second=0, microsecond=0)
     heure_debut_default = now.strftime("%H:%M")
     heure_fin_default = (now + timedelta(hours=1)).strftime("%H:%M")
@@ -410,7 +431,7 @@ def add_emploi_view(request):
             context = {
                 "error": "Tous les champs sont obligatoires.",
                 "professeurs": professeurs,
-                "eleves": eleves,
+
                 "heure_debut_default": heure_debut_default,
                 "heure_fin_default": heure_fin_default,
             }
@@ -428,10 +449,19 @@ def add_emploi_view(request):
         professeur = get_object_or_404(Professeur, id=professeur_id)
         eleve = get_object_or_404(Eleves, id=eleves_id)
 
+        # 🔒 sécurité
+        if not eleve.classe:
+            context = {
+                "error": "Cet élève n'a pas de classe.",
+                "professeurs": professeurs,
+                "heure_debut_default": heure_debut_default,
+                "heure_fin_default": heure_fin_default,
+            }
+            return render(request, "formulaire/ajouter_emploi.html", context)
         # Sauvegarde dans la base
         EmploiTemps.objects.create(
             professeur=professeur,
-            eleve=eleve,
+            classe=eleve.classe,
             heure_debut=heure_debut.time(),
             heure_fin=heure_fin.time(),
             jour=jour,
@@ -442,7 +472,6 @@ def add_emploi_view(request):
     # Si méthode GET → valeurs par défaut
     context = {
         "professeurs": professeurs,
-        "eleves": eleves,
         "heure_debut_default": heure_debut_default,
         "heure_fin_default": heure_fin_default,
     }
@@ -563,7 +592,7 @@ def gestion_classe_view(request):
     eleves = Eleves.objects.all().order_by('id')
 
     if niveau_filtre:
-        eleves = eleves.filter(niveau=niveau_filtre)
+        eleves = eleves.filter(classe__niveau=niveau_filtre)
 
     eleves_page_obj, afficher_pagination_eleve = paginate_queryset(request, eleves, per_page=2, page_param='page_eleves')
 
@@ -588,7 +617,7 @@ def gestion_classe_view(request):
     if niveau_selectionne and niveau_selectionne.isdigit():
         # Récupérer les jours distincts pour ce niveau
         jours_niveau_qs = EmploiTemps.objects.filter(
-            eleve__niveau=int(niveau_selectionne)
+            Classe__niveau=int(niveau_selectionne)
         ).values_list('jour', flat=True).distinct()
 
         # Construire un dict jours valable pour ce niveau
@@ -607,7 +636,7 @@ def gestion_classe_view(request):
     # Filtrer les emplois par niveau et jour
     emplois = EmploiTemps.objects.all()
     if niveau_selectionne and niveau_selectionne.isdigit():
-        emplois = emplois.filter(eleve__niveau=int(niveau_selectionne))
+        emplois = emplois.filter(Classe__niveau=int(niveau_selectionne))
 
     if jour_selectionne in jours_valides_filtrés:
         emplois = emplois.filter(jour=jour_selectionne)
@@ -617,8 +646,10 @@ def gestion_classe_view(request):
     presences_page_obj, afficher_pagination = paginate_queryset(request, emplois, per_page=2)
 
     # Construire la liste des niveaux (inchangé)
-    niveaux_raw = EmploiTemps.objects.values_list('eleve__niveau', flat=True).distinct().order_by('eleve__niveau')
+    niveaux_raw = EmploiTemps.objects.values_list('classe__niveau', flat=True).distinct().order_by('classe__niveau')
     niveaux = [(n, f"Classe {n}") for n in niveaux_raw if n is not None]
+
+    classes = Classe.objects.all().order_by('niveau', 'nom')
 
     # Récupération de totaux (supposée exister dans ton code)
     total_context = get_totals_context() or {}
@@ -637,6 +668,7 @@ def gestion_classe_view(request):
         'niveau_param': niveau_selectionne,
         'niveaux': niveaux,
         'professeurs': professeurs,
+        'classes': classes,
         'emplois': emplois,
         'niveau_filtre': niveau_filtre,
     }
@@ -707,68 +739,78 @@ def update_professeur_view(request, professeur_id):
             'professeur': professeur
         }
         return render(request, 'modifications/modifier_prof.html', context)
+
 # ----------------------------- ajouter les éléves dans la base de données ---------
+
 def add_eleves_view(request):
     if request.method == "POST":
         form = ElevesForm(request.POST)
+
         if form.is_valid():
-            form.save()
+            eleve = form.save(commit=False)
+
+            # 🔥 sécuriser la récupération de la classe
+            classe_id = request.POST.get("classe")
+
+            if not classe_id:
+                messages.error(request, "Veuillez choisir une classe.")
+                return redirect('gestion_classe')
+
+            classe = get_object_or_404(Classe, id=classe_id)
+
+            eleve.classe = classe
+            eleve.save()
+
             messages.success(request, "Élève ajouté avec succès.")
             return redirect('gestion_classe')
+
         else:
             messages.error(request, "Veuillez corriger les erreurs du formulaire.")
-    else:
-        form = ElevesForm()
-    return render(request, "gestions/gestion_classes.html", {"form": form})
+
+    return redirect('gestion_classe')
 
 def update_eleve_view(request, eleve_id):
-    # Récupérer l'élève ou retourner une erreur 404
     eleve = get_object_or_404(Eleves, id=eleve_id)
 
     if request.method == 'POST':
-        # Récupérer les données du formulaire
         prenom = request.POST.get('prenom')
         nom = request.POST.get('nom')
         date_naissance = request.POST.get('date_naissance')
         lieu_naissance = request.POST.get('lieu_naissance')
         sexe = request.POST.get('sexe')
         adresse = request.POST.get('adresse')
-        niveau = request.POST.get('niveau')
-        classe = request.POST.get('clasee')
+        classe_id = request.POST.get('classe')
 
-        # Validation de base
-        if not all([prenom, nom, date_naissance, lieu_naissance, sexe, adresse, niveau]):
-            messages.error(request, "Veuillez remplir tous les champs.")
+        if not all([prenom, nom, date_naissance, lieu_naissance, sexe, adresse, classe_id]):
+            messages.error(request, "Champs manquants.")
             return redirect('update_eleve', eleve_id=eleve.id)
 
         try:
-            # Validation spécifique
-            if date_naissance and now().date() < now().strptime(date_naissance, "%Y-%m-%d").date():
-                raise ValidationError("La date de naissance ne peut pas être dans le futur.")
-            
-            # Mise à jour des informations de l'élève
+            date_obj = datetime.strptime(date_naissance, "%Y-%m-%d").date()
+            classe = get_object_or_404(Classe, id=classe_id)
+
             eleve.prenom = prenom
             eleve.nom = nom
-            eleve.date_naissance = date_naissance
+            eleve.date_naissance = date_obj
             eleve.lieu_naissance = lieu_naissance
             eleve.sexe = sexe
             eleve.adresse = adresse
-            eleve.niveau = int(niveau)
             eleve.classe = classe
+
             eleve.save()
 
-            messages.success(request, "Élève modifié avec succès.")
-            return redirect('gestion_classe')  # Remplacez par l'URL de votre page de gestion de classe
+            messages.success(request, "Élève mis à jour avec succès.")
+            return redirect('gestion_classe')  # ✔ retour OK
 
-        except ValidationError as e:
-            messages.error(request, e.message)
+        except Exception as e:
+            messages.error(request, str(e))
             return redirect('update_eleve', eleve_id=eleve.id)
 
-    # Si la méthode est GET, pré-remplir les données de l'élève
-    context = {
+    # 🔥 IMPORTANT : affichage du formulaire
+    return render(request, 'modifications/modif_eleve.html', {
         'eleve': eleve,
-    }
-    return render(request, 'modifications/modif_eleve.html', context)
+        'classes': Classe.objects.all()
+    })
 #----------------------------------------------------------------------
 def add_absence_view(request):
     if request.method == 'POST':

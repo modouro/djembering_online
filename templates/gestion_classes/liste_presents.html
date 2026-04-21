@@ -5,7 +5,78 @@
             <div class="d-flex justify-content-between align-items-center bg-info p-0 rounded">
                 <h5 class="text-white mx-2">Tous les cours du jour</h5>
                 <!-- Filtre -->
-               
+                <!-- Bouton pour ouvrir le modal -->
+                 <button type="button" class="btn btn-info bg-white" data-bs-toggle="modal" data-bs-target="#modalClasse">
+                    ➕ classe
+                </button>
+
+                <!-- Modal -->
+                <div class="modal fade" id="modalClasse" tabindex="-1" aria-labelledby="modalClasseLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                        <div class="modal-content">
+
+                            <!-- Header simple -->
+                            <div class="modal-header">
+                                <h5 class="modal-title" id="modalClasseLabel">Ajouter une classe</h5>
+                                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                            </div>
+
+                            <!-- Body -->
+                            <div class="modal-body">
+                                   <!-- 🔥 ICI (bon emplacement) -->    
+                                {% if messages %}
+                                    {% for message in messages %}
+                                        {% if "classe" in message.tags %}
+                                            <div class="alert alert-{{ message.tags|cut:'classe ' }} alert-dismissible fade show">
+                                                {{ message }}
+                                                <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
+                                            </div>
+                                        {% endif %}
+                                    {% endfor %}
+                                {% endif %}
+                                <form method="POST" action="{% url 'add_classe' %}">
+                                    {% csrf_token %}
+
+                                    <fieldset class="border p-3 rounded">
+                                        <legend class="text-center p-2 fw-bold" style="font-size: 1.3rem;">
+                                            Nouvelle classe
+                                        </legend>
+
+                                        <!-- Niveau -->
+                                        <div class="mb-3">
+                                            <select class="form-control" name="niveau" required>
+                                                <option value="">-- Sélectionnez un niveau --</option>
+                                                <option value="6">6</option>
+                                                <option value="5">5</option>
+                                                <option value="4">4</option>
+                                                <option value="3">3</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Classe -->
+                                        <div class="mb-3">
+                                            <select class="form-control text-uppercase" name="nom" required>
+                                                <option value="">-- Sélectionnez une classe --</option>
+                                                <option value="A">A</option>
+                                                <option value="B">B</option>
+                                                <option value="C">C</option>
+                                                <option value="D">D</option>
+                                            </select>
+                                        </div>
+
+                                        <!-- Bouton -->
+                                        <button type="submit" class="btn btn-primary w-100">
+                                            Ajouter la classe
+                                        </button>
+
+                                    </fieldset>
+                                </form>
+                            </div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <form method="get" class="d-flex align-items-center">
                     <!-- Sélection du niveau -->
                     <select name="niveau" id="niveau" class="form-select me-2">

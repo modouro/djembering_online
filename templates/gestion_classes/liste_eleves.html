@@ -62,24 +62,16 @@
                             <div class="mb-3">
                                 <input type="text" class="form-control" name="adresse" placeholder="Entrer votre adresse" required>
                             </div>
-                            <div class="mb-3">
-                                <select class="form-control" name="niveau" required>
-                                    <option value="">-- Sélectionnez une classe --</option>
-                                    <option value="6">6</option>
-                                    <option value="5">5</option>
-                                    <option value="4">4</option>
-                                    <option value="3">3</option>
-                                </select>
-                            </div>
-                             <div class="mb-3">
-                                <select class="form-control" name="classe" required>
-                                    <option value="">-- Sélectionnez une classe --</option>
-                                    <option value="A">A</option>
-                                    <option value="B">B</option>
-                                    <option value="C">C</option>
-                                    <option value="D">D</option>
-                                </select>
-                            </div>
+                            <select class="form-control" name="classe" required>
+                                <option disabled selected>Choisir une classe</option>
+                                {% for c in classes %}
+                                    <option value="{{ c.id }}">
+                                        {{ c.niveau }} {{ c.nom }} 
+                                    </option>
+                                {% empty %}
+                                    <option disabled>Aucune classe disponible</option>
+                                {% endfor %}
+                            </select>
                             <button type="submit" class="btn btn-primary w-100 mb-3">S'inscrire</button>
                         </fieldset>
                     </form>  
@@ -102,7 +94,13 @@
                 <p class="mb-0">{{ eleves.prenom }} - {{ eleves.nom }}</p>
             </div>
             <div class="col-4 col-md-4">
-                <p class="mb-0">{{ eleves.niveau }} éme</p>
+                <p class="mb-0">
+                     {% if eleves.classe %}
+                        {{ eleves.classe.niveau }} {{ eleves.classe.nom }}
+                    {% else %}
+                        — <span class="text-danger">Aucune classe</span>
+                    {% endif %}
+                </p>
             </div>
             <!-- Bouton Détails -->
             <div class="col-12 col-md-2 text-end">

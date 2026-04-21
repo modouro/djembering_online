@@ -90,11 +90,13 @@
                                 <span class="input-group-text bg-info-subtle text-dark fs-6 fw-bold">
                                     Niveau :
                                 </span>
-                            <select id="niveau" class="form-select border-0 fs-6" name="niveau" required>
-                                <option value="3" {% if eleve.niveau == "3" %}selected{% endif %}>3</option>
-                                <option value="4" {% if eleve.niveau == "4" %}selected{% endif %}>4</option>
-                                <option value="5" {% if eleve.niveau == "5" %}selected{% endif %}>5</option>
-                                <option value="6" {% if eleve.niveau == "6" %}selected{% endif %}>6</option>
+                             <select name="classe" class="form-select border-0 fs-6" required>
+                                {% for c in classes %}
+                                    <option value="{{ c.id }}"
+                                        {% if eleve.classe and eleve.classe.id == c.id %}selected{% endif %}>
+                                        Classe {{ c.niveau }} {{ c.nom }}
+                                    </option>
+                                {% endfor %}
                             </select>
                             <!-- Icône de modification -->
                                 <i class="bi bi-pencil"></i>

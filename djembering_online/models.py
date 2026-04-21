@@ -51,10 +51,15 @@ class Administrateur(AbstractBaseUser, PermissionsMixin):
 
 class Classe(models.Model):
     niveau = models.IntegerField(verbose_name=_("Niveau"))
-    nom = models.CharField(max_length=10, verbose_name=_("Nom de classe"))  # A, B, C...
+    nom = models.CharField(max_length=10, verbose_name=_("Nom de classe"))
 
     def __str__(self):
         return f"Niveau {self.niveau} - Classe {self.nom}"
+
+    class Meta:
+        constraints = [
+            models.UniqueConstraint(fields=['niveau', 'nom'], name='unique_classe_niveau_nom')
+        ]
     
     
 class Eleves(models.Model):

@@ -5,7 +5,7 @@ from .views import (
      add_autorisation_view, update_autorisation_view, edit_calcul_heures, mettre_a_jour_heures,
      gestions_emploi_view, add_emploi_view, update_emploi, delete_emploi, page_maj_heures,
      gestion_classe_view, add_absence_view, update_absence_view,
-     add_professeur_view, update_professeur_view, add_eleves_view, update_eleve_view,
+     add_professeur_view, update_professeur_view, add_eleves_view, update_eleve_view, add_classe_view,
      sections_view, login_view, register_view, logout_view, mon_compte,
 )
 
@@ -18,8 +18,10 @@ urlpatterns = [
     path('sections/<str:section>/', sections_view, name="sections"),
     path('add_heure/', ajouter_calcul_heures, name='add_heure'),
     path('edit_heures/<int:id>/edit/', edit_calcul_heures, name='edit_heures'),
+
+    path("add-classe/", add_classe_view, name="add_classe"),
     
-     # Route pour la page du template de mise à jour
+    # Route pour la page du template de mise à jour
     path('sections/<int:section>/', page_maj_heures, name='page_maj_heures'),
     # Route pour exécuter la mise à jour
     path('heures/maj/execute/', mettre_a_jour_heures, name='mettre_a_jour_heures'),
