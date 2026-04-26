@@ -414,6 +414,7 @@ def gestions_emploi_view(request, section=None, day=None):
 
 def add_emploi_view(request):
     professeurs = Professeur.objects.all()
+    classes = Classe.objects.all()
     
     now = datetime.now().replace(minute=0, second=0, microsecond=0)
     heure_debut_default = now.strftime("%H:%M")
@@ -424,14 +425,14 @@ def add_emploi_view(request):
         heure_fin_str = request.POST.get("heure_fin")
         jour = request.POST.get("jour")
         professeur_id = request.POST.get("professeur")
-        eleves_id = request.POST.get("eleve")
+        classes_id = request.POST.get("classe")
 
         # Vérification des champs obligatoires
-        if not (professeur_id and eleves_id and heure_debut_str and jour):
+        if not (professeur_id and classes_id and heure_debut_str and jour):
             context = {
                 "error": "Tous les champs sont obligatoires.",
                 "professeurs": professeurs,
-
+                "classes": classes,
                 "heure_debut_default": heure_debut_default,
                 "heure_fin_default": heure_fin_default,
             }
@@ -447,21 +448,12 @@ def add_emploi_view(request):
             heure_fin = datetime.strptime(heure_fin_str, "%H:%M")
 
         professeur = get_object_or_404(Professeur, id=professeur_id)
-        eleve = get_object_or_404(Eleves, id=eleves_id)
-
-        # 🔒 sécurité
-        if not eleve.classe:
-            context = {
-                "error": "Cet élève n'a pas de classe.",
-                "professeurs": professeurs,
-                "heure_debut_default": heure_debut_default,
-                "heure_fin_default": heure_fin_default,
-            }
-            return render(request, "formulaire/ajouter_emploi.html", context)
+        classe = get_object_or_404(Classe, id=classes_id)
+        
         # Sauvegarde dans la base
         EmploiTemps.objects.create(
             professeur=professeur,
-            classe=eleve.classe,
+            classe=classe,
             heure_debut=heure_debut.time(),
             heure_fin=heure_fin.time(),
             jour=jour,
@@ -472,6 +464,7 @@ def add_emploi_view(request):
     # Si méthode GET → valeurs par défaut
     context = {
         "professeurs": professeurs,
+        "classes": classes,
         "heure_debut_default": heure_debut_default,
         "heure_fin_default": heure_fin_default,
     }
@@ -617,7 +610,7 @@ def gestion_classe_view(request):
     if niveau_selectionne and niveau_selectionne.isdigit():
         # Récupérer les jours distincts pour ce niveau
         jours_niveau_qs = EmploiTemps.objects.filter(
-            Classe__niveau=int(niveau_selectionne)
+            classe__niveau=int(niveau_selectionne)
         ).values_list('jour', flat=True).distinct()
 
         # Construire un dict jours valable pour ce niveau
@@ -636,7 +629,7 @@ def gestion_classe_view(request):
     # Filtrer les emplois par niveau et jour
     emplois = EmploiTemps.objects.all()
     if niveau_selectionne and niveau_selectionne.isdigit():
-        emplois = emplois.filter(Classe__niveau=int(niveau_selectionne))
+        emplois = emplois.filter(classe__niveau=int(niveau_selectionne))
 
     if jour_selectionne in jours_valides_filtrés:
         emplois = emplois.filter(jour=jour_selectionne)
@@ -741,7 +734,6 @@ def update_professeur_view(request, professeur_id):
         return render(request, 'modifications/modifier_prof.html', context)
 
 # ----------------------------- ajouter les éléves dans la base de données ---------
-
 def add_eleves_view(request):
     if request.method == "POST":
         form = ElevesForm(request.POST)

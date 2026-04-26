@@ -48,12 +48,14 @@
                     </select>                        
                 </div>
                 <div class="mb-3">
-                    <select name="eleve" class="form-control" id="eleve" required>
-                        <option value="" disabled selected>Choisir un niveau</option>
-                        {% for eleve in eleves %}
-                        <option value="{{ eleve.id }}">{{ eleve.niveau }} </option>
+                    <select name="classe" class="form-control" required>
+                        <option value="" disabled selected>Choisir une classe</option>
+                        {% for c in classes %}
+                            <option value="{{ c.id }}">
+                                Classe {{ c.niveau }} {{ c.nom }}
+                            </option>
                         {% endfor %}
-                    </select>                        
+                    </select>                    
                 </div>
                 <div class="mb-3 d-flex align-content-between justify-content-between">
                     <button type="submit" class="btn btn-primary">Ajouter</button>
